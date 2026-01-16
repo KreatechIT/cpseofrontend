@@ -10,7 +10,7 @@ import { filterBySearch } from "@/utils/filterBySearch";
 import { paginate } from "@/utils/paginate";
 import { useMemo, useState } from "react";
 import BudgetDetailsTable from "./BudgetDetailsTable";
-import MonthRangeFilter from "@/components/filters/MonthRangeFilter";
+import MonthRangeFilter from "@/components/filters/MonthRangeFIlter";
 
 const today = new Date();
 const startDate = new Date(today.getFullYear(), today.getMonth(), 1); // 1st day of current month
