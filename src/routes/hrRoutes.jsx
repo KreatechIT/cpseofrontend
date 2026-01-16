@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import PermissionRoute from "./elements/PermissionRoute";
 import NotFoundPage from "@/pages/NotFoundPage";
-import HrSidebarLayout from "@/modules/hr-module/layouts/HrSidebarLayout";
+import HrSidebarLayout from "@/modules/hr-module/layouts/HRSidebarLayout";
 import HiringSidebarLayout from "@/modules/hr-module/layouts/HiringSidebarLayout";
 import VacancyPage from "@/modules/hr-module/pages/vacancies/VacancyPage";
 import HrDashboard from "@/modules/hr-module/pages/dashboards/HrDashboard";
