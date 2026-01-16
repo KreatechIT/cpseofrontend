@@ -145,5 +145,4 @@ formatDate.js
 - Example:
 
 ```text
-index.css
 ```
