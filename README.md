@@ -5,7 +5,7 @@ Frontend application for the **CorePath360 (CP360) platform**, built with **Reac
 ## Tech Stack
 
 - **Framework:** React 19
-- **Bundler:** Vite
+- **Bundler:** Vite 
 - **Styling:** Tailwind CSS v4, ShadCN UI
 - **State Management:** Redux Toolkit, Redux Persist
 - **Routing:** React Router DOM v7
