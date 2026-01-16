@@ -7,11 +7,11 @@ const CpUpdates = ({ updates }) => {
   return (
     <Card className="shadow-none">
       <CardHeader>
-        <CardTitle>CP Updates</CardTitle>
+        <CardTitle className="text-3xl">CP Updates</CardTitle>
       </CardHeader>
       <ScrollArea className="h-[300px]">
         <CardContent className="space-y-4">
-          {updates.map((update, index) => (
+          {/* {updates.map((update, index) => (
             <div key={index} className="flex items-start gap-4">
               <div className="flex flex-col items-center">
                 <div className="bg-primary/25 flex h-10 w-10 items-center justify-center rounded-full">
@@ -29,7 +29,19 @@ const CpUpdates = ({ updates }) => {
                 <p className="text-sm mt-1">{update.detail}</p>
               </div>
             </div>
-          ))}
+          ))} */}
+        <div className="text-start mb-4 flex justify-between">
+          <p className="text-1xl ">Technical SEO Fix <br /> <i>By PIC 1</i></p>
+          <p className="text-green-600"> Completed</p>
+        </div>
+        <div className="text-start mb-4 flex justify-between">
+          <p className="text-1xl ">20 Quality Backlinks  <br /> <i>By PIC 1</i></p>
+          <p className="text-red-600">  Pending</p>
+        </div>
+        <div className="text-start mb-4 flex justify-between">
+          <p className="text-1xl ">20 Quality Backlinks <br /> <i>By PIC 1</i></p>
+          <p className="text-green-600"> Completed</p>
+        </div>
         </CardContent>
       </ScrollArea>
     </Card>

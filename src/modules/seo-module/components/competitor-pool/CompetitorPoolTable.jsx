@@ -7,7 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { format } from "date-fns";
+// import { format } from "date-fns";
 
 const CompetitorPoolTable = ({ competitors }) => {
   return (

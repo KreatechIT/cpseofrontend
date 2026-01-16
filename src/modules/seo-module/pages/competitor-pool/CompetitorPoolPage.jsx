@@ -7,15 +7,22 @@ import CompetitorPoolFilters from "../../components/competitor-pool/CompetitorPo
 
 const CompetitorPoolPage = () => {
   const dispatch = useDispatch();
+
   const { user } = useSelector((state) => state.auth);
-  const { competitors } = useSelector((state) => state.competitorPool);
-  const loading = !competitors;
+
+  // Safely get competitors from Redux – always return array
+  const competitors = useSelector((state) => {
+    const comp = state.competitorPool?.competitors;
+    return Array.isArray(comp) ? comp : []; // ← This line fixes the error
+  });
+
+  const loading = !competitors.length && !user?.organisation_id; // Better loading condition
 
   useEffect(() => {
-    if (user?.organisation_id && !competitors) {
+    if (user?.organisation_id) {
       getAllCompetitors(dispatch);
     }
-  }, [dispatch, user?.organisation_id, competitors]);
+  }, [dispatch, user?.organisation_id]);
 
   return (
     <>
@@ -26,7 +33,7 @@ const CompetitorPoolPage = () => {
         {loading ? (
           <TableSkeleton />
         ) : (
-          <CompetitorPoolFilters competitors={competitors || []} />
+          <CompetitorPoolFilters competitors={competitors} />
         )}
       </main>
     </>

@@ -3,6 +3,9 @@ import { PageHeading } from "@/components/shared/PageHeading";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils/cn";
 import PerformanceOverview from "../../components/performance-analysis-report/PerformanceOverview";
+import SearchConsole from "../../components/performance-analysis-report/SearchConsole";
+import Analytics from "../../components/performance-analysis-report/Analytics";
+import Conversion from "../../components/performance-analysis-report/Conversion";
 
 const PerformanceAnalysisReportPage = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -45,17 +48,17 @@ const PerformanceAnalysisReportPage = () => {
           {/* Future tabs will go here */}
           {activeTab === "search-console" && (
             <div className="text-center py-12 text-muted-foreground">
-              Search Console report coming soon...
+              <SearchConsole />
             </div>
           )}
           {activeTab === "analytics" && (
             <div className="text-center py-12 text-muted-foreground">
-              Analytics report coming soon...
+              <Analytics />
             </div>
           )}
           {activeTab === "conversion" && (
             <div className="text-center py-12 text-muted-foreground">
-              Conversion report coming soon...
+              <Conversion />
             </div>
           )}
         </div>

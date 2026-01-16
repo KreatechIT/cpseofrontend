@@ -1,35 +1,33 @@
 import axiosInstance from "@/services/axiosInstance";
 import { toast } from "sonner";
-import { setDashboardLoading, setDashboardError, storeCpUpdates, storeCpNews } from "@/modules/seo-module/store/seoDashboardSlice";
+import {
+  setOverview,
+  setCpUpdates,
+  setCpNews,
+  setMilestones,
+  setLoading,
+  setError,
+} from "../store/seoDashboardSlice";
 
-export const getCpUpdates = async (dispatch) => {
-  dispatch(setDashboardLoading(true));
-  try {
-    const res = await axiosInstance.get("/seo/cp-updates/");
-    dispatch(storeCpUpdates(res.data));
-    return res.data;
-  } catch (error) {
-    dispatch(setDashboardError(error.message));
-    toast.error("Failed to load CP Updates");
-    console.error(error);
-    return [];
-  } finally {
-    dispatch(setDashboardLoading(false));
-  }
-};
+export const fetchDashboardData = (dispatch, params = {}) => {
+  dispatch(setLoading(true));
 
-export const getCpNews = async (dispatch) => {
-  dispatch(setDashboardLoading(true));
-  try {
-    const res = await axiosInstance.get("/seo/cp-news/");
-    dispatch(storeCpNews(res.data));
-    return res.data;
-  } catch (error) {
-    dispatch(setDashboardError(error.message));
-    toast.error("Failed to load CP News");
-    console.error(error);
-    return [];
-  } finally {
-    dispatch(setDashboardLoading(false));
-  }
+  const overviewPromise = axiosInstance.get("/seo/performance/overview/", { params });
+  const updatesPromise = axiosInstance.get("/seo/cp-updates/", { params: { ordering: "-created_at", page_size: 5 } });
+  const newsPromise = axiosInstance.get("/seo/cp-news/", { params: { ordering: "-published_at", page_size: 5 } });
+  const milestonesPromise = axiosInstance.get("/seo/cp/milestones/", { params });
+
+  Promise.all([overviewPromise, updatesPromise, newsPromise, milestonesPromise])
+    .then(([overviewRes, updatesRes, newsRes, milestonesRes]) => {
+      dispatch(setOverview(overviewRes.data));
+      dispatch(setCpUpdates(updatesRes.data));
+      dispatch(setCpNews(newsRes.data));
+      dispatch(setMilestones(milestonesRes.data));
+      dispatch(setLoading(false));
+    })
+    .catch((err) => {
+      dispatch(setError(err.message));
+      toast.error("Failed to load dashboard data");
+      dispatch(setLoading(false));
+    });
 };

@@ -24,31 +24,33 @@ import { PageHeading } from "@/components/shared/PageHeading";
 
 const COLORS = ["#80CBC4", "#284654", "#E9C46B", "#F4A361", "#E66E51"];
 
-const TotalLinks = () => {
+const FrequentVendor = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Filters
+  // Filters (same as others)
   const [linkTypeSearch, setLinkTypeSearch] = useState("");
   const [dateFilter, setDateFilter] = useState({ from: null, to: null });
-  const [compareProject, setCompareProject] = useState("");
   const [domain, setDomain] = useState("");
   const [orderMonth, setOrderMonth] = useState("");
   const [linkType, setLinkType] = useState("");
 
-  // Pie chart data
-  const [pieData, setPieData] = useState([]);
+  // Compare Project - Multiple selection
+  const [selectedCompareProjects, setSelectedCompareProjects] = useState([]);
+
+  // Pie chart data per project/vendor
+  const [pieDataByProject, setPieDataByProject] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await axiosInstance.get("/seo/backlinks/total-links");
+        const res = await axiosInstance.get("/seo/backlinks/vendor-usage/");
         setData(res.data);
 
-        // Build pie chart from vendors array
+        // Build pie chart data from vendors (single project case for now)
         const vendors = res.data.vendors || [];
         const chartData = vendors.map((v, index) => ({
           name: v.vendor_name || `Vendor ${index + 1}`,
@@ -57,10 +59,11 @@ const TotalLinks = () => {
           color: COLORS[index % COLORS.length],
         }));
 
-        setPieData(chartData);
+        // For now, single project view (extend for multi later)
+        setPieDataByProject({ "All Projects": chartData });
       } catch (err) {
         setError(err.message);
-        toast.error("Failed to load Total Links data");
+        toast.error("Failed to load Frequent Used Vendor data");
         console.error(err);
       } finally {
         setLoading(false);
@@ -73,7 +76,7 @@ const TotalLinks = () => {
   if (loading) {
     return (
       <div className="text-center py-12 text-muted-foreground">
-        Loading Total Links data...
+        Loading Frequent Used Vendor data...
       </div>
     );
   }
@@ -96,12 +99,36 @@ const TotalLinks = () => {
   const totalProjects = data.total_projects || 0;
   const totalLinks = data.total_links || 0;
 
+  // Toggle project selection
+  const toggleCompareProject = (project) => {
+    setSelectedCompareProjects((prev) =>
+      prev.includes(project)
+        ? prev.filter((p) => p !== project)
+        : [...prev, project]
+    );
+  };
+
+  // For simplicity, we show single pie now (multi-project support can be added later)
+  const activePieData = pieDataByProject["All Projects"] || [];
+
+  const compareProject = selectedCompareProjects[0] || "";
+
+  // For simplicity, we show single pie now (multi-project support can be added later)
+  const comparePieData = pieDataByProject[compareProject] || [];
+  const setCompareProject = (project) => {
+    setSelectedCompareProjects([project]);
+  };
+  //pieData = activePieData;
+
+  // For simplicity, we show single pie now (multi-project support can be added later)
+  const pieData = activePieData;
+
   return (
     <div className="space-y-8">
-      <PageHeading pageTitle="Total Links" />
+      <PageHeading pageTitle="Frequent Used Vendors" />
       {/* Filters - same layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
-        <div className="md:col-span-4">
+        <div className="md:col-span-2 lg:col-span-4">
           <Label className="mb-3">Search by Link Type</Label>
           <Input
             value={linkTypeSearch}
@@ -110,7 +137,7 @@ const TotalLinks = () => {
           />
         </div>
 
-        <div className="md:col-span-2">
+        <div className="md:col-span-2 lg:col-span-2">
           <Label className="mb-3">Date Wise Filter</Label>
           <Popover>
             <PopoverTrigger asChild>
@@ -223,13 +250,14 @@ const TotalLinks = () => {
         </div>
       </div>
 
-      {/* Pie Chart - same design */}
+      {/* Pie Chart */}
       <div className="border p-6 rounded-lg bg-gray-50">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold">
-            Total Links ({totalLinks.toLocaleString()} from {totalProjects}{" "}
-            projects)
+            Frequent Used Vendor ({totalLinks.toLocaleString()} links from{" "}
+            {totalProjects} projects)
           </h3>
+          {/* Compare Project moved here, but removed multi-select as per design */}
           <Select
             value={compareProject}
             onValueChange={setCompareProject}
@@ -263,7 +291,13 @@ const TotalLinks = () => {
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
-            <Tooltip />
+            <Tooltip
+              formatter={(value) =>
+                `${value} links (${
+                  pieData.find((d) => d.value === value)?.percentage
+                }%)`
+              }
+            />
           </PieChart>
         </div>
 
@@ -286,4 +320,4 @@ const TotalLinks = () => {
   );
 };
 
-export default TotalLinks;
+export default FrequentVendor;

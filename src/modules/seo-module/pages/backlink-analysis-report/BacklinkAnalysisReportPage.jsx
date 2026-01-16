@@ -1,23 +1,55 @@
 import { useState } from "react";
 import { PageHeading } from "@/components/shared/PageHeading";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ChevronDownIcon } from "lucide-react";
 import TotalLinks from "../../components/backlink-analysis-report/TotalLinks"; // We'll create this next
+import IndexRate from "../../components/backlink-analysis-report/IndexRate"; // New import
+import LinkTypes from "../../components/backlink-analysis-report/LinkTypes"; // New import
+import FrequentVendor from "../../components/backlink-analysis-report/FrequentVendor"; // New import
+import KeywordDensity from "../../components/backlink-analysis-report/KeywordDensity"; // New import
+import KeywordCost from "../../components/backlink-analysis-report/KeywordCost"; // New import
+import BacklinksOpportunity from "../../components/backlink-analysis-report/BacklinksOpportunity"; // New import
+import VendorOverview from "../../components/backlink-analysis-report/VendorOverview";
 
 const BacklinkAnalysisReportPage = () => {
   const [selectedReport, setSelectedReport] = useState("total-links"); // Default to Total Links
 
   const buttons = [
-    { label: "Backlinks", subs: ["Total Links", "Index Rate", "Link Types"], values: ["total-links", "index-rate", "link-types"] },
-    { label: "Vendor", subs: ["Vendor Overview", "Frequent Used Vendor"], values: ["vendor-overview", "frequent-vendor"] },
-    { label: "Keyword", subs: ["Keyword Density", "Keyword Cost"], values: ["keyword-density", "keyword-cost"] },
-    { label: "Backlinks Opportunity", subs: ["Backlinks Opportunity"], values: ["backlinks-opportunity"] },
-    { label: "Vendor Overview", subs: ["Vendor Overview"], values: ["vendor-overview"] },
+    {
+      label: "Backlinks",
+      subs: ["Total Links", "Index Rate", "Link Types"],
+      values: ["total-links", "index-rate", "link-types"],
+    },
+    {
+      label: "Vendor",
+      subs: ["Vendor Overview", "Frequent Used Vendor"],
+      values: ["vendor-overview", "frequent-vendor"],
+    },
+    {
+      label: "Keyword",
+      subs: ["Keyword Density", "Keyword Cost"],
+      values: ["keyword-density", "keyword-cost"],
+    },
+    {
+      label: "Backlinks Opportunity",
+      subs: ["Backlinks Opportunity"],
+      values: ["backlinks-opportunity"],
+    },
+    {
+      label: "Vendor Overview",
+      subs: ["Vendor Overview"],
+      values: ["vendor-overview"],
+    },
   ];
-function cn(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
+  function cn(...classes) {
+    return classes.filter(Boolean).join(" ");
+  }
   return (
     <>
       <title>Backlink Analysis Report - Core360</title>
@@ -29,10 +61,13 @@ function cn(...classes) {
             <DropdownMenu key={index}>
               <DropdownMenuTrigger asChild>
                 <Button
-                  variant={btn.values.includes(selectedReport) ? "default" : "outline"}
+                  variant={
+                    btn.values.includes(selectedReport) ? "default" : "outline"
+                  }
                   className={cn(
                     "transition-all",
-                    btn.values.includes(selectedReport) && "bg-blue-600 hover:bg-blue-700"
+                    btn.values.includes(selectedReport) &&
+                      "bg-blue-600 hover:bg-blue-700"
                   )}
                 >
                   {btn.label} <ChevronDownIcon className="ml-2 h-4 w-4" />
@@ -40,7 +75,10 @@ function cn(...classes) {
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 {btn.subs.map((sub, subIndex) => (
-                  <DropdownMenuItem key={subIndex} onClick={() => setSelectedReport(btn.values[subIndex])}>
+                  <DropdownMenuItem
+                    key={subIndex}
+                    onClick={() => setSelectedReport(btn.values[subIndex])}
+                  >
                     {sub}
                   </DropdownMenuItem>
                 ))}
@@ -52,6 +90,15 @@ function cn(...classes) {
         {/* Load Selected Component */}
         <div className="mt-8">
           {selectedReport === "total-links" && <TotalLinks />}
+          {selectedReport === "index-rate" && <IndexRate />}
+          {selectedReport === "link-types" && <LinkTypes />}
+          {selectedReport === "frequent-vendor" && <FrequentVendor />}
+          {selectedReport === "keyword-density" && <KeywordDensity />}
+          {selectedReport === "keyword-cost" && <KeywordCost />}
+          {selectedReport === "vendor-overview" && <VendorOverview />}
+          {selectedReport === "backlinks-opportunity" && (
+            <BacklinksOpportunity />
+          )}
           {/* Add other components here as we build them */}
           {/* e.g., if (selectedReport === "index-rate") <IndexRate /> */}
         </div>

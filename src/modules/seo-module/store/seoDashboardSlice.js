@@ -1,8 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
+  overview: null,
   cpUpdates: [],
   cpNews: [],
+  milestones: [],
   loading: false,
   error: null,
 };
@@ -11,26 +13,35 @@ const seoDashboardSlice = createSlice({
   name: "seoDashboard",
   initialState,
   reducers: {
-    storeCpUpdates: (state, action) => {
-      state.cpUpdates = action.payload;
+    setOverview: (state, action) => {
+      state.overview = action.payload;
     },
-    storeCpNews: (state, action) => {
-      state.cpNews = action.payload;
+    setCpUpdates: (state, action) => {
+      state.cpUpdates = Array.isArray(action.payload.results) ? action.payload.results : [];
     },
-    setDashboardLoading: (state, action) => {
+    setCpNews: (state, action) => {
+      state.cpNews = Array.isArray(action.payload.results) ? action.payload.results : [];
+    },
+    setMilestones: (state, action) => {
+      state.milestones = Array.isArray(action.payload.milestones) ? action.payload.milestones : [];
+    },
+    setLoading: (state, action) => {
       state.loading = action.payload;
     },
-    setDashboardError: (state, action) => {
+    setError: (state, action) => {
       state.error = action.payload;
+      state.loading = false;
     },
   },
 });
 
 export const {
-  storeCpUpdates,
-  storeCpNews,
-  setDashboardLoading,
-  setDashboardError,
+  setOverview,
+  setCpUpdates,
+  setCpNews,
+  setMilestones,
+  setLoading,
+  setError,
 } = seoDashboardSlice.actions;
 
 export default seoDashboardSlice.reducer;

@@ -40,7 +40,9 @@ import conversionImportReducer from "@/modules/seo-module/store/conversionImport
 import seRankingImportReducer from "@/modules/seo-module/store/seRankingImportSlice";
 import seoDashboardReducer from "@/modules/seo-module/store/seoDashboardSlice";
 import insightReducer from "@/modules/seo-module/store/insightSlice";
-
+import issueOverviewImportReducer from "@/modules/seo-module/store/issueOverviewImportSlice";
+import dailyRecordImportReducer from "@/modules/seo-module/store/dailyRecordImportSlice";
+import testScenarioReducer from "@/modules/seo-module/store/testScenarioSlice";
 // Redux Persist Configuration
 const persistConfig = {
   key: "root", // Key for localStorage
@@ -76,6 +78,9 @@ const combinedReducer = combineReducers({
   seRankingImport: seRankingImportReducer,
   seoDashboard: seoDashboardReducer,
   insight: insightReducer,
+  issueOverviewImport: issueOverviewImportReducer,
+  dailyRecordImport: dailyRecordImportReducer,
+  testScenario: testScenarioReducer,
   // Add other feature reducers here
 });
 

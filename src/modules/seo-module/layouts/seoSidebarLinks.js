@@ -220,6 +220,12 @@ const seoSidebarLinks = [
             hasPermission: () => true, // Always visible
             children: null,
           },
+          {
+            title: "Daily Record",
+            path: "/seo/library/daily-record",
+            hasPermission: () => true, // Always visible
+            children: null,
+          },
         ],
       },
 

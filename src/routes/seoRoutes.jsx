@@ -27,6 +27,10 @@ import PerformanceAnalysisReportPage from "@/modules/seo-module/pages/performanc
 import ProjectCostReportPage from "@/modules/seo-module/pages/project-cost-report/ProjectCostReportPage";
 import SeRankingReportPage from "@/modules/seo-module/pages/se-ranking-report/SeRankingReportPage";
 import AhrefsReportPage from "@/modules/seo-module/pages/ahrefs-report/AhrefsReportPage";
+import IssueOverviewImportPage from "@/modules/seo-module/pages/issue-overview-import/IssueOverviewImportPage";
+import DailyRecordPage from "@/modules/seo-module/pages/daily-record-import/DailyRecordImportPage";
+import LinkSimilarityPage from "@/modules/seo-module/pages/link-similarity/LinkSimilarityPage";
+import TestScenarioPage from "@/modules/seo-module/pages/test-scenario/TestScenarioPage";
 
 const seoRoutes = {
   path: "seo",
@@ -150,6 +154,20 @@ const seoRoutes = {
           element: (
             <PermissionRoute userType="member">
               <OrderManagementPage />
+            </PermissionRoute>
+          ),
+        },
+      ],
+    },
+    {
+      path: "vendor",
+      element: <SeoSidebarLayout />,
+      children: [
+        {
+          path: "link-similarity",
+          element: (
+            <PermissionRoute userType="member">
+              <LinkSimilarityPage />
             </PermissionRoute>
           ),
         },
@@ -308,6 +326,36 @@ const seoRoutes = {
           element: (
             <PermissionRoute userType="member">
               <AhrefsReportPage />
+            </PermissionRoute>
+          ),
+        },
+      ],
+    },
+    {
+      path: "library",
+      element: <SeoSidebarLayout />,
+      children: [
+        {
+          path: "issues-overview",
+          element: (
+            <PermissionRoute userType="member">
+              <IssueOverviewImportPage />
+            </PermissionRoute>
+          ),
+        },
+        {
+          path: "daily-record",
+          element: (
+            <PermissionRoute userType="member">
+              <DailyRecordPage />
+            </PermissionRoute>
+          ),
+        },
+        {
+          path: "test-scenario",
+          element: (
+            <PermissionRoute userType="member">
+              <TestScenarioPage />
             </PermissionRoute>
           ),
         },

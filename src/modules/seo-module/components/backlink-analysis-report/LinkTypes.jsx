@@ -21,15 +21,14 @@ import { PieChart, Pie, Cell, Tooltip } from "recharts";
 import axiosInstance from "@/services/axiosInstance";
 import { toast } from "sonner";
 import { PageHeading } from "@/components/shared/PageHeading";
-
 const COLORS = ["#80CBC4", "#284654", "#E9C46B", "#F4A361", "#E66E51"];
 
-const TotalLinks = () => {
+const LinkTypes = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Filters
+  // Filters (same as others)
   const [linkTypeSearch, setLinkTypeSearch] = useState("");
   const [dateFilter, setDateFilter] = useState({ from: null, to: null });
   const [compareProject, setCompareProject] = useState("");
@@ -45,22 +44,22 @@ const TotalLinks = () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await axiosInstance.get("/seo/backlinks/total-links");
+        const res = await axiosInstance.get("/seo/backlinks/link-types/");
         setData(res.data);
 
-        // Build pie chart from vendors array
-        const vendors = res.data.vendors || [];
-        const chartData = vendors.map((v, index) => ({
-          name: v.vendor_name || `Vendor ${index + 1}`,
-          value: v.link_count || 0,
-          percentage: v.percentage?.toFixed(2) || 0,
+        // Build pie chart from distribution array
+        const distribution = res.data.distribution || [];
+        const chartData = distribution.map((d, index) => ({
+          name: d.type || `Type ${index + 1}`,
+          value: d.count || 0,
+          percentage: d.percentage?.toFixed(2) || 0,
           color: COLORS[index % COLORS.length],
         }));
 
         setPieData(chartData);
       } catch (err) {
         setError(err.message);
-        toast.error("Failed to load Total Links data");
+        toast.error("Failed to load Link Types data");
         console.error(err);
       } finally {
         setLoading(false);
@@ -73,7 +72,7 @@ const TotalLinks = () => {
   if (loading) {
     return (
       <div className="text-center py-12 text-muted-foreground">
-        Loading Total Links data...
+        Loading Link Types data...
       </div>
     );
   }
@@ -93,13 +92,13 @@ const TotalLinks = () => {
     data.filters?.available_vendors?.map((v) => v.name) || [];
   const dateRange = data.filters?.date_range || {};
 
-  const totalProjects = data.total_projects || 0;
   const totalLinks = data.total_links || 0;
+  const totalProjects = data.total_projects || 0;
 
   return (
     <div className="space-y-8">
-      <PageHeading pageTitle="Total Links" />
-      {/* Filters - same layout */}
+      <PageHeading pageTitle="Link Types" />
+      {/* Filters - same as others */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
         <div className="md:col-span-4">
           <Label className="mb-3">Search by Link Type</Label>
@@ -223,29 +222,14 @@ const TotalLinks = () => {
         </div>
       </div>
 
-      {/* Pie Chart - same design */}
+      {/* Pie Chart */}
       <div className="border p-6 rounded-lg bg-gray-50">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold">
-            Total Links ({totalLinks.toLocaleString()} from {totalProjects}{" "}
+            Link Types ({totalLinks.toLocaleString()} links from {totalProjects}{" "}
             projects)
           </h3>
-          <Select
-            value={compareProject}
-            onValueChange={setCompareProject}
-            className="w-[200px]"
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Compare Project" />
-            </SelectTrigger>
-            <SelectContent>
-              {availableVendors.map((opt) => (
-                <SelectItem key={opt} value={opt}>
-                  {opt}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {/* No Compare Project dropdown here */}
         </div>
 
         <div className="flex justify-center">
@@ -263,7 +247,13 @@ const TotalLinks = () => {
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
-            <Tooltip />
+            <Tooltip
+              formatter={(value) =>
+                `${value} links (${
+                  pieData.find((d) => d.value === value)?.percentage
+                }%)`
+              }
+            />
           </PieChart>
         </div>
 
@@ -286,4 +276,4 @@ const TotalLinks = () => {
   );
 };
 
-export default TotalLinks;
+export default LinkTypes;

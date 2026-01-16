@@ -13,14 +13,19 @@ const CompetitorDetailsPage = () => {
   const navigate = useNavigate();
 
   const { user } = useSelector((state) => state.auth);
-  const { competitors } = useSelector((state) => state.competitorDetails);
-  const loading = !competitors;
+  // Safely get competitors – fallback to empty array if undefined/null/not array
+  const competitors = useSelector((state) => {
+    const comp = state.competitorDetails?.competitors;
+    return Array.isArray(comp) ? comp : [];
+  });
+
+  const loading = !competitors.length && !user?.organisation_id; // more accurate loading
 
   useEffect(() => {
-    if (user?.organisation_id && !competitors) {
+    if (user?.organisation_id) {
       getAllCompetitors(dispatch);
     }
-  }, [dispatch, user?.organisation_id, competitors]);
+  }, [dispatch, user?.organisation_id]);
 
   const handleAddCompetitor = () => {
     navigate("/seo/competitor/competitor-details/add");
@@ -41,7 +46,7 @@ const CompetitorDetailsPage = () => {
         {loading ? (
           <TableSkeleton />
         ) : (
-          <CompetitorDetailsFilters competitors={competitors || []} />
+          <CompetitorDetailsFilters competitors={competitors} />
         )}
       </main>
     </>

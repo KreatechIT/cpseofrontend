@@ -1,26 +1,46 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const CpMilestone = () => {
-  // Placeholder - replace with real data/API when ready
-  const milestones = [
-    { title: "Milestone 1", description: "Achieved 100% SEO coverage", date: "2026-01-01" },
-    { title: "Milestone 2", description: "Launched new project", date: "2026-01-03" },
-  ];
+const CpMilestone = ({ overview }) => {
+  if (!overview || !overview.projects) {
+    return <Card className="shadow-none"><CardContent>No data</CardContent></Card>;
+  }
+
+  let totalImpressions = 0;
+  let totalClicks = 0;
+  let totalFormInquiries = 0;
+  let totalJoins = 0;
+
+  overview.projects.forEach((project) => {
+    project.data.forEach((row) => {
+      totalImpressions += row.impressions || 0;
+      totalClicks += row.clicks || 0;
+      totalFormInquiries += (row.inquiry_download || 0) + (row.inquiry_whatsapp || 0);
+      totalJoins += row.join || 0;
+    });
+  });
 
   return (
     <Card className="shadow-none">
       <CardHeader>
-        <CardTitle>CP Milestone</CardTitle>
+        <CardTitle className="text-3xl">CP Milestone</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {milestones.map((m, index) => (
-          <div key={index} className="p-4 border rounded-lg">
-            <h4 className="font-semibold">{m.title}</h4>
-            <p className="text-sm text-muted-foreground">{m.description}</p>
-            <p className="text-xs text-muted-foreground mt-2">{m.date}</p>
-          </div>
-        ))}
-        <p className="text-center text-muted-foreground text-sm">More milestones coming soon...</p>
+      <CardContent className="">
+        <div className="text-start mb-4 flex justify-between">
+          <p className="text-2xl ">Impressions</p>
+          <p className="font-bold text-green-600">{totalImpressions.toLocaleString()}</p>
+        </div>
+        <div className="text-start mb-4 flex justify-between">
+          <p className="text-2xl ">Clicks</p>
+          <p className="font-bold text-green-600">{totalClicks.toLocaleString()}</p>
+        </div>
+        <div className="text-start mb-4 flex justify-between">
+          <p className=" text-2xl ">Form Inquiries</p>
+          <p className="font-bold text-green-600">{totalFormInquiries.toLocaleString()}</p>
+        </div>
+        <div className="text-start mb-4 flex justify-between">
+          <p className=" text-2xl ">Join / Signups</p>
+          <p className="font-bold text-green-600">{totalJoins.toLocaleString()}</p>
+        </div>
       </CardContent>
     </Card>
   );

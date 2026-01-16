@@ -17,19 +17,32 @@ import { Button } from "@/components/ui/button";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
-import { PieChart, Pie, Cell, Tooltip } from "recharts";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 import axiosInstance from "@/services/axiosInstance";
 import { toast } from "sonner";
 import { PageHeading } from "@/components/shared/PageHeading";
 
-const COLORS = ["#80CBC4", "#284654", "#E9C46B", "#F4A361", "#E66E51"];
+const BAR_COLORS = {
+  latestLinkIndexed: "#FBC02D",
+  referringDomainIndex: "#8E24AA",
+  ahrefsIndex: "#3872FA",
+};
 
-const TotalLinks = () => {
+const IndexRate = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Filters
+  // Filters (same as Total Links)
   const [linkTypeSearch, setLinkTypeSearch] = useState("");
   const [dateFilter, setDateFilter] = useState({ from: null, to: null });
   const [compareProject, setCompareProject] = useState("");
@@ -37,30 +50,30 @@ const TotalLinks = () => {
   const [orderMonth, setOrderMonth] = useState("");
   const [linkType, setLinkType] = useState("");
 
-  // Pie chart data
-  const [pieData, setPieData] = useState([]);
+  // Bar chart data
+  const [barData, setBarData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await axiosInstance.get("/seo/backlinks/total-links");
+        const res = await axiosInstance.get("/seo/backlinks/index-rate/");
         setData(res.data);
 
-        // Build pie chart from vendors array
+        // Build bar chart data from vendors array
         const vendors = res.data.vendors || [];
         const chartData = vendors.map((v, index) => ({
-          name: v.vendor_name || `Vendor ${index + 1}`,
-          value: v.link_count || 0,
-          percentage: v.percentage?.toFixed(2) || 0,
-          color: COLORS[index % COLORS.length],
+          vendor: v.vendor_name || `Vendor ${String.fromCharCode(65 + index)}`, // A, B, C, etc.
+          latestLinkIndexed: v.latest_link_indexed_rate || 0,
+          referringDomainIndex: v.unique_domain_index_rate || 0,
+          ahrefsIndex: v.ahrefs_index_rate || 0,
         }));
 
-        setPieData(chartData);
+        setBarData(chartData);
       } catch (err) {
         setError(err.message);
-        toast.error("Failed to load Total Links data");
+        toast.error("Failed to load Index Rate data");
         console.error(err);
       } finally {
         setLoading(false);
@@ -73,7 +86,7 @@ const TotalLinks = () => {
   if (loading) {
     return (
       <div className="text-center py-12 text-muted-foreground">
-        Loading Total Links data...
+        Loading Index Rate data...
       </div>
     );
   }
@@ -86,20 +99,17 @@ const TotalLinks = () => {
     );
   }
 
-  // Extract options from API response
+  // Extract options from API response (same as Total Links)
   const availableLinkTypes =
     data.filters?.available_link_types?.map((lt) => lt.name) || [];
   const availableVendors =
     data.filters?.available_vendors?.map((v) => v.name) || [];
   const dateRange = data.filters?.date_range || {};
 
-  const totalProjects = data.total_projects || 0;
-  const totalLinks = data.total_links || 0;
-
   return (
     <div className="space-y-8">
-      <PageHeading pageTitle="Total Links" />
-      {/* Filters - same layout */}
+      <PageHeading pageTitle="Index Rate" />
+      {/* Filters - same as Total Links */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
         <div className="md:col-span-4">
           <Label className="mb-3">Search by Link Type</Label>
@@ -110,7 +120,7 @@ const TotalLinks = () => {
           />
         </div>
 
-        <div className="md:col-span-2">
+        <div className="md:col-span-3   ">
           <Label className="mb-3">Date Wise Filter</Label>
           <Popover>
             <PopoverTrigger asChild>
@@ -223,13 +233,10 @@ const TotalLinks = () => {
         </div>
       </div>
 
-      {/* Pie Chart - same design */}
+      {/* Bar Chart */}
       <div className="border p-6 rounded-lg bg-gray-50">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold">
-            Total Links ({totalLinks.toLocaleString()} from {totalProjects}{" "}
-            projects)
-          </h3>
+          <h3 className="text-lg font-semibold">Index Rate</h3>
           <Select
             value={compareProject}
             onValueChange={setCompareProject}
@@ -248,42 +255,58 @@ const TotalLinks = () => {
           </Select>
         </div>
 
-        <div className="flex justify-center">
-          <PieChart width={600} height={400}>
-            <Pie
-              data={pieData}
-              cx="50%"
-              cy="50%"
-              labelLine={false}
-              outerRadius={150}
-              dataKey="value"
-              label={({ name, percentage }) => `${name} ${percentage}%`}
-            >
-              {pieData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
-              ))}
-            </Pie>
-            <Tooltip />
-          </PieChart>
-        </div>
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart data={barData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="vendor" />
+            <YAxis />
+            <Tooltip formatter={(value) => `${value}%`} />
+            <Legend />
+            <Bar
+              dataKey="latestLinkIndexed"
+              fill={BAR_COLORS.latestLinkIndexed}
+              name="Latest Link Indexed"
+            />
+            <Bar
+              dataKey="referringDomainIndex"
+              fill={BAR_COLORS.referringDomainIndex}
+              name="Referring Domain Index"
+            />
+            <Bar
+              dataKey="ahrefsIndex"
+              fill={BAR_COLORS.ahrefsIndex}
+              name="Ahrefs Index"
+            />
+          </BarChart>
+        </ResponsiveContainer>
 
-        {/* Bottom Vendor Bar */}
-        <div className="flex justify-center gap-4 mt-6 flex-wrap">
-          {pieData.map((entry, index) => (
-            <div key={index} className="flex items-center gap-2">
-              <div
-                className="w-4 h-4"
-                style={{ backgroundColor: entry.color }}
-              ></div>
-              <span>
-                {entry.name} ({entry.percentage}%)
-              </span>
-            </div>
-          ))}
-        </div>
+        {/* Bottom Legend Bar */}
+        {/* <div className="flex justify-center gap-6 mt-6 flex-wrap">
+          <div className="flex items-center gap-2">
+            <div
+              className="w-4 h-4"
+              style={{ backgroundColor: BAR_COLORS.latestLinkIndexed }}
+            ></div>
+            <span>Latest Link Indexed</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div
+              className="w-4 h-4"
+              style={{ backgroundColor: BAR_COLORS.referringDomainIndex }}
+            ></div>
+            <span>Referring Domain Index</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div
+              className="w-4 h-4"
+              style={{ backgroundColor: BAR_COLORS.ahrefsIndex }}
+            ></div>
+            <span>Ahrefs Index</span>
+          </div>
+        </div> */}
       </div>
     </div>
   );
 };
 
-export default TotalLinks;
+export default IndexRate;
