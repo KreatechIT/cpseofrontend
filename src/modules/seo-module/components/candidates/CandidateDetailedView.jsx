@@ -20,7 +20,7 @@ import { useEffect, useState } from "react";
 
 import { Separator } from "@/components/ui/separator";
 import { setDialogData } from "@/store/reducers/dialogSlice";
-import CandidateDISCResult from "./CandidateDiscResult";
+import CandidateDISCResult from "./CandidateDISCResult";
 import { addBaseURL } from "@/utils/addBaseUrl";
 import CandidateRemarkForm from "./CandidateRemarkForm";
 

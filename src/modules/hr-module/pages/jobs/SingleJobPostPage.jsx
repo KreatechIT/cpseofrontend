@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { getAllJobPosts } from "@/modules/hr-module/services/jobsService";
 import { getCandidatesByJobPost } from "@/modules/hr-module/services/candidatesService";
 import { useParams } from "react-router-dom";
-import SingleJobPostFilters from "@/modules/hr-module/components/jobs/JobPostFilters";
+import SingleJobPostFilters from "@/modules/hr-module/components/jobs/SingleJobPostFilters";
 
 const SignleJobPostPage = () => {
   const dispatch = useDispatch();
