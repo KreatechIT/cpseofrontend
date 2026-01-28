@@ -211,7 +211,7 @@ const TestScenario = () => {
         <div>
           <Label className="mb-3">Project</Label>
           <Select value={selectedProject} onValueChange={setSelectedProject}>
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="All Projects" />
             </SelectTrigger>
             <SelectContent>
@@ -231,7 +231,7 @@ const TestScenario = () => {
             value={selectedSubProject}
             onValueChange={setSelectedSubProject}
           >
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="All Sub Projects" />
             </SelectTrigger>
             <SelectContent>
@@ -248,7 +248,7 @@ const TestScenario = () => {
         <div>
           <Label className="mb-3">Domain</Label>
           <Select value={selectedDomain} onValueChange={setSelectedDomain}>
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="All Domains" />
             </SelectTrigger>
             <SelectContent>

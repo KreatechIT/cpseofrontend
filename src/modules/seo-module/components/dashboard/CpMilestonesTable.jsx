@@ -27,7 +27,9 @@ const CpMilestonesTable = ({ milestones }) => {
   const totalPages = Math.ceil(milestones.length / ITEMS_PER_PAGE);
   const start = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginated = milestones.slice(start, start + ITEMS_PER_PAGE);
-
+const getCellBackgroundColor = (isAchieved) => {
+  return isAchieved ? "bg-green-50" : "bg-red-50";
+};
   return (
     <div className="border rounded-lg">
     <CardHeader className="py-5">
@@ -49,13 +51,17 @@ const CpMilestonesTable = ({ milestones }) => {
             {paginated.map((m, index) => {
               const isAchieved = m.status === "achieved";
               return (
-                <TableRow key={index} className={isAchieved ? "bg-green-50" : "bg-red-50"}>
+                // <TableRow key={index} className={getCellBackgroundColor(isAchieved)}>
+                <TableRow key={index}>
                   <TableCell>{m.keywords_target}</TableCell>
                   <TableCell>-</TableCell> {/* No date field */}
                   {/* <TableCell>-</TableCell> No note */}
                   <TableCell>Achieved {m.impressions_actual} impressions</TableCell>
                   <TableCell>{m.due_date || "-"}</TableCell>
-                  <TableCell>
+                  
+                  <TableCell
+                    // className={isAchieved ? "bg-green-50 hover:bg-green-100" : "bg-red-50 hover:bg-red-100"}
+                  >
                     <span className={isAchieved ? "text-green-600" : "text-red-600"}>
                       {isAchieved ? "Achieved" : "Not Achieved"}
                     </span>

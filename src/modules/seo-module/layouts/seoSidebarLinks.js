@@ -208,12 +208,12 @@ const seoSidebarLinks = [
             hasPermission: () => true, // Always visible
             children: null,
           },
-          {
-            title: "Glossary",
-            path: "/seo/library/glossary",
-            hasPermission: () => true, // Always visible
-            children: null,
-          },
+          // {
+          //   title: "Glossary",
+          //   path: "/seo/library/glossary",
+          //   hasPermission: () => true, // Always visible
+          //   children: null,
+          // },
           {
             title: "Test Scenario",
             path: "/seo/library/test-scenario",

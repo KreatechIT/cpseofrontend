@@ -22,6 +22,13 @@ const safeFormat = (dateStr, formatStr = "dd MMM yyyy") => {
   return isNaN(date.getTime()) ? "-" : format(date, formatStr);
 };
 
+// Safe join helper (handles string or array)
+const safeJoin = (value, separator = ", ") => {
+  if (!value) return "-";
+  if (Array.isArray(value)) return value.join(separator) || "-";
+  return String(value); // if it's already a string
+};
+
 const CompetitorDetailsTable = ({ filteredCompetitors }) => {
   const navigate = useNavigate();
 
@@ -41,38 +48,14 @@ const CompetitorDetailsTable = ({ filteredCompetitors }) => {
 
   // Sample data for Mind Map (replace with real API data later)
   const mindMapData = [
-    {
-      id: 1,
-      order: "Order #001",
-      domain: "cchit.org",
-      start: "15-21 May 2023",
-      stop: "12 Aug 2023",
-      duration: "21 days",
-    },
-    {
-      id: 2,
-      order: "Order #002",
-      domain: "example.com",
-      start: "1 Jun 2023",
-      stop: "30 Jun 2023",
-      duration: "30 days",
-    },
+    { id: 1, order: "Order #001", domain: "cchit.org", start: "15-21 May 2023", stop: "12 Aug 2023", duration: "21 days" },
+    { id: 2, order: "Order #002", domain: "example.com", start: "1 Jun 2023", stop: "30 Jun 2023", duration: "30 days" },
   ];
 
   const subTierData = {
     1: [
-      {
-        tier: "3.1 (Tier 2)",
-        domain: "bruxy.org",
-        start: "8 October 2022",
-        stop: "N/A",
-      },
-      {
-        tier: "3.2 (Tier 2)",
-        domain: "healthsite.net",
-        start: "10 Nov 2022",
-        stop: "N/A",
-      },
+      { tier: "3.1 (Tier 2)", domain: "bruxy.org", start: "8 October 2022", stop: "N/A" },
+      { tier: "3.2 (Tier 2)", domain: "healthsite.net", start: "10 Nov 2022", stop: "N/A" },
     ],
   };
 
@@ -118,10 +101,13 @@ const CompetitorDetailsTable = ({ filteredCompetitors }) => {
                     </TableCell>
                     <TableCell>{comp.unique_domain || "-"}</TableCell>
                     <TableCell>{comp.redirection || "-"}</TableCell>
-                    <TableCell>{comp.product?.join(", ") || "-"}</TableCell>
-                    <TableCell>
-                      {comp.business_type?.join(", ") || "-"}
-                    </TableCell>
+
+                    {/* Fixed: safe join for product */}
+                    <TableCell>{safeJoin(comp.product)}</TableCell>
+
+                    {/* Fixed: safe join for business_type */}
+                    <TableCell>{safeJoin(comp.business_type)}</TableCell>
+
                     <TableCell className="text-right">
                       {comp.domain_rating || "-"}
                     </TableCell>
@@ -146,14 +132,12 @@ const CompetitorDetailsTable = ({ filteredCompetitors }) => {
                     <TableCell className="text-right">
                       {comp.total_organic_keywords || "-"}
                     </TableCell>
-                    <TableCell>
-                      {safeFormat(comp.domain_created_date)}
-                    </TableCell>
-                    <TableCell>
-                      {safeFormat(comp.domain_expiration_date)}
-                    </TableCell>
+                    <TableCell>{safeFormat(comp.domain_created_date)}</TableCell>
+                    <TableCell>{safeFormat(comp.domain_expiration_date)}</TableCell>
                     <TableCell>{comp.domain_age || "-"}</TableCell>
                     <TableCell>{safeFormat(comp.date_start_ranking)}</TableCell>
+
+                    {/* Uncomment if you want actions back */}
                     {/* <TableCell className="text-center">
                       <div className="flex justify-center gap-2">
                         <Button
@@ -237,7 +221,7 @@ const CompetitorDetailsTable = ({ filteredCompetitors }) => {
               </ScrollArea>
             </div>
 
-            {/* Right Side - Flow Chart Cards */}
+           {/* Right Side - Flow Chart Cards */}
             <div className="col-span-9 relative">
               <div className="space-y-8">
                 {mindMapData.map((item, index) => (

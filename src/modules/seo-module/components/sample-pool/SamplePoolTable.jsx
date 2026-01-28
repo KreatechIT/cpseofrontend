@@ -35,7 +35,7 @@ const SamplePoolTable = ({ samples }) => {
             <TableHead>Domain Age</TableHead>
             <TableHead>Overlap Competitors</TableHead>
             <TableHead>Project Consists Link</TableHead>
-            <TableHead>Vendor</TableHead>
+            {/* <TableHead>Vendor</TableHead> */}
             <TableHead>Lowest Price (USD) General</TableHead>
             <TableHead>Lowest Price (USD) Niche</TableHead>
             <TableHead>Lowest Price Date (Discovered)</TableHead>
@@ -48,8 +48,8 @@ const SamplePoolTable = ({ samples }) => {
               <TableRow key={sample.id}>
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>{sample.discovered_date ? format(new Date(sample.discovered_date), "dd MMM yyyy") : "-"}</TableCell>
-                <TableCell>{sample.discovered_by || "-"}</TableCell>
-                <TableCell>{sample.vendor || "-"}</TableCell>
+                <TableCell>{sample.discovered_by_name || "-"}</TableCell>
+                <TableCell>{sample.vendor_name || "-"}</TableCell>
                 <TableCell>{sample.category || "-"}</TableCell>
                 <TableCell>{sample.unique_domain || "-"}</TableCell>
                 <TableCell>{sample.link_type || "-"}</TableCell>
@@ -65,7 +65,7 @@ const SamplePoolTable = ({ samples }) => {
                 <TableCell>{sample.domain_age || "-"}</TableCell>
                 <TableCell>{sample.overlap_competitors || "-"}</TableCell>
                 <TableCell>{sample.project_consists_link || "-"}</TableCell>
-                <TableCell>{sample.vendor || "-"}</TableCell>
+                {/* <TableCell>{sample.vendor || "-"}</TableCell> */}
                 <TableCell>{sample.lowest_price_usd_general || "-"}</TableCell>
                 <TableCell>{sample.lowest_price_usd_niche || "-"}</TableCell>
                 <TableCell>{sample.lowest_price_date ? format(new Date(sample.lowest_price_date), "dd MMM yyyy") : "-"}</TableCell>

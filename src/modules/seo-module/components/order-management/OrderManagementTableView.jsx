@@ -99,7 +99,7 @@ const OrderManagementTableView = ({ filteredOrders }) => {
                     <TableCell className="font-medium">
                       {start + index + 1}
                     </TableCell>
-                    <TableCell>{order.project || "-"}</TableCell>
+                    <TableCell>{order.project_name || "-"}</TableCell>
                     <TableCell className="font-medium">
                       {order.transaction_id || "-"}
                     </TableCell>
@@ -110,7 +110,7 @@ const OrderManagementTableView = ({ filteredOrders }) => {
                     </TableCell>
                     <TableCell>{order.order_month || "-"}</TableCell>
                     <TableCell>{order.domain || "-"}</TableCell>
-                    <TableCell>{order.vendor || "-"}</TableCell>
+                    <TableCell>{order.vendor_name || "-"}</TableCell>
                     <TableCell>{order.link_type || "-"}</TableCell>
                     <TableCell className="text-right">
                       {order.total_links || "-"}
