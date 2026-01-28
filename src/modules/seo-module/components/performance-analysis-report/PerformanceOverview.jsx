@@ -159,7 +159,7 @@ const PerformanceOverview = () => {
   };
 
   return (
-    <div className="space-y-8">
+ <div className="space-y-8">
       <PageHeading pageTitle="Performance Overview" />
       {/* Filters */}
       <div className="flex justify-end gap-4 flex-wrap">
@@ -278,7 +278,7 @@ const PerformanceOverview = () => {
           const paginated = projectData.slice(start, start + ITEMS_PER_PAGE);
 
           return (
-            <div key={projectId} className="border rounded-lg bg-card">
+            <div key={projectId} className="border rounded-lg ">
               <div className="p-4 font-semibold text-lg">{projectName}</div>
               <ScrollArea className="">
                 <Table>

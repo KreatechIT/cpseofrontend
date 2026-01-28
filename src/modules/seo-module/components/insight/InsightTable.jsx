@@ -16,27 +16,21 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination"; // your central component
+} from "@/components/ui/pagination";
 
 const ITEMS_PER_PAGE = 10;
 
-const InsightTable = ({ data }) => {
+const InsightTable = ({ data, onOpenVendorSummary }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Reset to page 1 when data changes
   useEffect(() => {
     setCurrentPage(1);
   }, [data]);
 
   if (!data || data.length === 0) {
-    return (
-      <p className="text-center py-8 text-muted-foreground">
-        No data available
-      </p>
-    );
+    return <p className="text-center py-8 text-muted-foreground">No data available</p>;
   }
 
-  // Pagination logic
   const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE);
   const start = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedData = data.slice(start, start + ITEMS_PER_PAGE);
@@ -45,7 +39,7 @@ const InsightTable = ({ data }) => {
     <div className="space-y-4">
       <ScrollArea className="rounded-md border">
         <Table>
-          <TableHeader className="sticky top-0 bg-background z-10">
+          <TableHeader className="sticky top-0 bg-background z-10" style={{ background: "#3872FA33" }}>
             <TableRow>
               <TableHead className="w-[50px]">No</TableHead>
               <TableHead>Unique Domain</TableHead>
@@ -74,20 +68,26 @@ const InsightTable = ({ data }) => {
             {paginatedData.map((row, index) => (
               <TableRow key={row.id || index}>
                 <TableCell>{start + index + 1}</TableCell>
-                <TableCell>{row.unique_domain || "-"}</TableCell>
+                {/* Clickable Unique Domain */}
+                <TableCell
+                  className="font-medium cursor-pointer hover:underline text-blue-600"
+                  onClick={() => onOpenVendorSummary && onOpenVendorSummary()}
+                >
+                  {row.unique_domain || "-"}
+                </TableCell>
                 <TableCell className="max-w-[200px] truncate">
-                  {row.live_link ? (
-                    <a
-                      href={row.live_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
-                    >
-                      {row.live_link}
-                    </a>
-                  ) : (
-                    "-"
-                  )}
+                    {row.live_link ? (
+                        <a
+                          href={row.live_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline"
+                        >
+                          {new URL(row.live_link).pathname}
+                        </a>
+                      ) : (
+                        "-"
+                    )}
                 </TableCell>
                 <TableCell>{row.domain_rating || "-"}</TableCell>
                 <TableCell>
@@ -97,8 +97,9 @@ const InsightTable = ({ data }) => {
                 <TableCell>{row.domain_authority || "-"}</TableCell>
                 <TableCell>{row.page_authority || "-"}</TableCell>
                 <TableCell>{row.spam_score || "-"}</TableCell>
-                <TableCell>
+                <TableCell className="max-w-[200px] truncate">
                   {row.target_url_1 || row.target_url || "-"}
+
                 </TableCell>
                 <TableCell>
                   {row.keyword_1 || row.anchor || row.anchor_text || "-"}

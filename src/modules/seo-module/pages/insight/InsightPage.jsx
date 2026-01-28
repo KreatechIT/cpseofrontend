@@ -19,8 +19,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-
-// Central Pagination components (adjust path if needed)
 import {
   Pagination,
   PaginationContent,
@@ -30,6 +28,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { TableSkeleton } from "@/components/ui/skeleton";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -40,7 +39,7 @@ const InsightPage = () => {
   );
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1); // Pagination for modal
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     fetchInsightData(dispatch);
@@ -53,39 +52,59 @@ const InsightPage = () => {
     ...(Array.isArray(competitorPool) ? competitorPool : []),
   ];
 
-  // Prepare vendor summary data
+  // Prepare vendor summary data with correct field mapping
   const vendorSummaryData = allData
     .filter(
       (row) =>
+        row?.vendor_name ||
         row?.vendor ||
         row?.associated_vendors ||
         row?.price_usd ||
-        row?.discovered_date
+        row?.discovered_date ||
+        row?.created_date ||
+        row?.first_seen
     )
     .map((row, index) => ({
       no: index + 1,
-      associated: row.associated_vendors || row.vendor || "-",
-      vendors: row.vendor || row.associated_vendors || "-",
-      price:
-        row.price_usd || row.price_usd_general || row.price_usd_niche || "-",
+      // Associated Vendors (array → joined string)
+      associated: Array.isArray(row.associated_vendors)
+        ? row.associated_vendors.join(", ") || "-"
+        : row.associated_vendors || row.vendor || "-",
+      // Vendors (prefer readable name)
+      vendors: row.vendor_name || row.vendor || "-",
+      // Price (prefer price_usd, fallback to others)
+      price: row.price_usd
+        ? `$${row.price_usd}`
+        : row.price_usd_general || row.price_usd_niche || "-",
+      // Note / Remark
       note: row.remark || row.note || "-",
+      // Discovered Date (multiple possible fields)
       discoveredDate:
-        row.discovered_date || row.created_date || row.first_seen || "-",
-      discoveredBy: row.discovered_by || row.created_by || "-",
-      overlapCompetitors: row.overlap_competitors || "-",
-      projectConsistsLink: row.project_consists_link || "-",
+        row.discovered_date ||
+        row.created_date ||
+        row.first_seen ||
+        row.lowest_price_date ||
+        "-",
+      // Discovered By (prefer name)
+      discoveredBy: row.discovered_by_name || row.discovered_by || "-",
+      // Overlap Competitors (array → joined)
+      overlapCompetitors: Array.isArray(row.overlap_competitors)
+        ? row.overlap_competitors.join(", ") || "-"
+        : row.overlap_competitors || "-",
+      // Project Consists Link (array → joined)
+      projectConsistsLink: Array.isArray(row.project_consists_link)
+        ? row.project_consists_link.join(", ") || "-"
+        : row.project_consists_link || "-",
     }));
 
-  // Pagination logic for modal table
+  // Pagination logic for modal
   const totalPages = Math.ceil(vendorSummaryData.length / ITEMS_PER_PAGE);
   const start = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedData = vendorSummaryData.slice(start, start + ITEMS_PER_PAGE);
 
   // Reset page when modal opens
   useEffect(() => {
-    if (modalOpen) {
-      setCurrentPage(1);
-    }
+    if (modalOpen) setCurrentPage(1);
   }, [modalOpen]);
 
   return (
@@ -98,9 +117,9 @@ const InsightPage = () => {
         </div>
 
         {loading ? (
-          <div className="text-center py-12">Loading data...</div>
+          <div className="text-center py-12"><TableSkeleton /></div>
         ) : (
-          <InsightTable data={allData} />
+          <InsightTable data={allData} onOpenVendorSummary={() => setModalOpen(true)} />
         )}
       </main>
 

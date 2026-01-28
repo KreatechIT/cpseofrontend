@@ -158,16 +158,16 @@ const SearchConsole = () => {
 
   return (
     <div className="space-y-8">
-      <PageHeading pageTitle="Performance Overview" />
+      <PageHeading pageTitle="Search Console" />
 
       {/* Line Chart - Ranking Trend over Time */}
-      <div className="border p-6 rounded-lg bg-gray-50">
+      <div className="border p-6 rounded-lg ">
         <h3 className="text-lg font-semibold text-start mb-8 text-black">
           Ranking Trend over Time
         </h3>
         <ResponsiveContainer width="100%" height={400}>
           <LineChart>
-            <CartesianGrid strokeDasharray="3 3" />
+            {/* <CartesianGrid strokeDasharray="3 3" /> */}
             <XAxis dataKey="period" />
             <YAxis />
             <Tooltip

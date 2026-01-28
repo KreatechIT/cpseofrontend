@@ -90,7 +90,7 @@ const PurchasedPoolTable = ({ purchased }) => {
                 <TableCell className="font-medium">
                   {start + index + 1}
                 </TableCell>
-                <TableCell>{item.project || "-"}</TableCell>
+                <TableCell>{item.project_name || "-"}</TableCell>
                 <TableCell className="font-medium">
                   {item.backlinks_id || "-"}
                 </TableCell>
@@ -99,9 +99,12 @@ const PurchasedPoolTable = ({ purchased }) => {
                     ? format(new Date(item.created), "dd MMM yyyy")
                     : "-"}
                 </TableCell>
-                <TableCell>{item.order_month || "-"}</TableCell>
+                <TableCell> {item.order_month
+                    ? format(new Date(item.order_month), "dd MMM yyyy")
+                    : "-"}
+                </TableCell>
                 <TableCell>{item.domain || "-"}</TableCell>
-                <TableCell>{item.vendor || "-"}</TableCell>
+                <TableCell>{item.vendor_name || "-"}</TableCell>
                 <TableCell>{item.link_type || "-"}</TableCell>
                 <TableCell className="text-right">
                   {item.price_usd || "-"}
@@ -110,8 +113,8 @@ const PurchasedPoolTable = ({ purchased }) => {
                   {item.price_myr || "-"}
                 </TableCell>
                 <TableCell>{item.unique_domain || "-"}</TableCell>
-                <TableCell>
-                  {item.live_link ? (
+                <TableCell className="max-w-[200px] truncate">
+                  {/* {item.live_link ? (
                     <a
                       href={item.live_link}
                       target="_blank"
@@ -122,10 +125,18 @@ const PurchasedPoolTable = ({ purchased }) => {
                     </a>
                   ) : (
                     "-"
-                  )}
+                  )} */}
+                  <a
+                    href={item.live_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    {item.live_link}
+                  </a>
                 </TableCell>
-                <TableCell>{item.latest_live_link_index || "-"}</TableCell>
-                <TableCell>{item.unique_domain_index || "-"}</TableCell>
+                <TableCell>{item.latest_live_link_index || "Not Indexed"}</TableCell>
+                <TableCell>{item.unique_domain_index || "Not Indexed"}</TableCell>
                 <TableCell>{item.keyword_1 || "-"}</TableCell>
                 <TableCell>
                   {item.target_url_1 ? (
@@ -159,7 +170,13 @@ const PurchasedPoolTable = ({ purchased }) => {
                 <TableCell>{item.status || "-"}</TableCell>
                 <TableCell>{item.link_status || "-"}</TableCell>
                 <TableCell>{item.follow || "-"}</TableCell>
-                <TableCell>{item.domain_rating || "-"}</TableCell>
+                <TableCell>
+                  {item.domain_rating
+                    ? item.domain_rating < 1
+                      ? item.domain_rating.toFixed(1)
+                      : Math.round(item.domain_rating)
+                    : "-"}
+                </TableCell>
                 <TableCell>{item.domain_authority || "-"}</TableCell>
                 <TableCell>{item.page_authority || "-"}</TableCell>
                 <TableCell>{item.spam_score || "-"}</TableCell>

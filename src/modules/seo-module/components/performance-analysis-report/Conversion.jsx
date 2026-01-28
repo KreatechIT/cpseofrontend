@@ -168,7 +168,7 @@ const Conversion = () => {
 
   return (
     <div className="space-y-8">
-      <PageHeading pageTitle="Performance Overview" />
+      <PageHeading pageTitle="Conversion" />
       {/* Filters */}
       <div className="flex justify-end gap-4 flex-wrap">
         <div className="w-[350px]">

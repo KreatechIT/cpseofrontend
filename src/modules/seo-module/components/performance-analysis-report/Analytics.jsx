@@ -168,7 +168,7 @@ const Analytics = () => {
 
   return (
     <div className="space-y-8">
-      <PageHeading pageTitle="Performance Overview" />
+      <PageHeading pageTitle="Analytics" />
       {/* Filters */}
       <div className="flex justify-end gap-4 flex-wrap">
         <div className="w-[350px]">

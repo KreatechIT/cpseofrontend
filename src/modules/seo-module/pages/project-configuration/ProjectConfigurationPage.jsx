@@ -258,11 +258,11 @@ const ProjectConfigurationPage = () => {
                           </a>
                         ) : "-"}
                       </TableCell>
-                      <TableCell>{project.pic || "-"}</TableCell>
-                      <TableCell>{project.owner || "-"}</TableCell>
+                      <TableCell>{project.pic_name || "-"}</TableCell>
+                      <TableCell>{project.owner_name || "-"}</TableCell>
                       <TableCell className="text-right">{project.impressions?.toLocaleString() || "0"}</TableCell>
                       <TableCell className="text-right">{project.clicks?.toLocaleString() || "0"}</TableCell>
-                      <TableCell>{project.join || "-"}</TableCell>
+                      <TableCell className="max-w-[100px] truncate text-right">{project.join || "-"}</TableCell>
                       <TableCell className="max-w-xs truncate">{project.keywords || "-"}</TableCell>
                       <TableCell>{project.due_date ? format(new Date(project.due_date), "dd MMM yyyy") : "-"}</TableCell>
                       <TableCell className="text-center">
