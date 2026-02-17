@@ -6,7 +6,10 @@ import { setDialogData } from "@/store/reducers/dialogSlice";
 import { TableSkeleton } from "@/components/ui/skeleton";
 import { useEffect, useState, useMemo } from "react";
 import SelectFilter from "@/components/filters/SelectFilter";
-import { ClearFilterButton, FilterButton } from "@/components/filters/FilterButtons";
+import {
+  ClearFilterButton,
+  FilterButton,
+} from "@/components/filters/FilterButtons";
 import { getAllProjects } from "../../services/projectService";
 import {
   Table,
@@ -20,7 +23,11 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon, Plus, Edit, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -68,22 +75,25 @@ const ProjectConfigurationPage = () => {
 
   const statusOptions = useMemo(() => {
     if (!allProjects) return [];
-    return [...new Set(allProjects.map(p => p.status).filter(Boolean))].map(value => ({
-      value,
-      label: value,
-    }));
+    return [...new Set(allProjects.map((p) => p.status).filter(Boolean))].map(
+      (value) => ({
+        value,
+        label: value,
+      }),
+    );
   }, [allProjects]);
 
   const searchFiltered = useMemo(() => {
     if (!allProjects || !searchQuery) return allProjects || [];
     const term = searchQuery.toLowerCase();
-    return allProjects.filter(project =>
-      project.project_name?.toLowerCase().includes(term) ||
-      project.sub_project_name?.toLowerCase().includes(term) ||
-      project.project_id?.toLowerCase().includes(term) ||
-      project.website?.toLowerCase().includes(term) ||
-      project.keywords?.toLowerCase().includes(term) ||
-      project.join?.toLowerCase().includes(term)
+    return allProjects.filter(
+      (project) =>
+        project.project_name?.toLowerCase().includes(term) ||
+        project.sub_project_name?.toLowerCase().includes(term) ||
+        project.project_id?.toLowerCase().includes(term) ||
+        project.website?.toLowerCase().includes(term) ||
+        project.keywords?.toLowerCase().includes(term) ||
+        project.join?.toLowerCase().includes(term),
     );
   }, [allProjects, searchQuery]);
 
@@ -92,10 +102,10 @@ const ProjectConfigurationPage = () => {
     if (isFilterApplied) {
       const statuses = Array.isArray(selectedStatuses) ? selectedStatuses : [];
       if (statuses.length > 0) {
-        result = result.filter(p => statuses.includes(p.status));
+        result = result.filter((p) => statuses.includes(p.status));
       }
       if (dateRange.from || dateRange.to) {
-        result = result.filter(p => {
+        result = result.filter((p) => {
           if (!p.due_date) return false;
           const due = new Date(p.due_date);
           if (dateRange.from && due < dateRange.from) return false;
@@ -116,7 +126,8 @@ const ProjectConfigurationPage = () => {
   };
 
   const handleAddProject = () => navigate("/seo/project-configuration/add");
-  const handleEdit = (project) => navigate(`/seo/project-configuration/edit/${project.id}`);
+  const handleEdit = (project) =>
+    navigate(`/seo/project-configuration/edit/${project.id}`);
   // Local state for delete confirmation modal
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState(null);
@@ -135,7 +146,9 @@ const ProjectConfigurationPage = () => {
       // Call your DELETE API
       await axiosInstance.delete(`/seo/projects/${projectToDelete.id}/`);
 
-      toast.success(`"${projectToDelete.project_name}" has been deleted successfully.`);
+      toast.success(
+        `"${projectToDelete.project_name}" has been deleted successfully.`,
+      );
 
       // Refetch projects to update the table
       await getAllProjects(user.organisation_id, dispatch);
@@ -159,7 +172,9 @@ const ProjectConfigurationPage = () => {
       <title>Project Configuration - Core360</title>
       <main className="mt-1 flex h-full flex-col p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="font-sans text-2xl font-medium">Project Configuration</h2>
+          <h2 className="font-sans text-2xl font-medium">
+            Project Configuration
+          </h2>
           <Button onClick={handleAddProject}>
             <Plus className="mr-2 h-4 w-4" />
             Add New Project
@@ -185,17 +200,16 @@ const ProjectConfigurationPage = () => {
 
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" className="w-[280px] justify-start text-left font-normal">
+                <Button
+                  variant="outline"
+                  className="w-[280px] justify-start text-left font-normal"
+                >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {dateRange.from ? (
-                    dateRange.to ? (
-                      `${format(dateRange.from, "dd MMM yyyy")} - ${format(dateRange.to, "dd MMM yyyy")}`
-                    ) : (
-                      format(dateRange.from, "dd MMM yyyy")
-                    )
-                  ) : (
-                    "Due Date Range"
-                  )}
+                  {dateRange.from
+                    ? dateRange.to
+                      ? `${format(dateRange.from, "dd MMM yyyy")} - ${format(dateRange.to, "dd MMM yyyy")}`
+                      : format(dateRange.from, "dd MMM yyyy")
+                    : "Due Date Range"}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
@@ -222,7 +236,10 @@ const ProjectConfigurationPage = () => {
         ) : (
           <ScrollArea className="rounded-md border h-[calc(100vh-300px)]">
             <Table>
-              <TableHeader className="sticky top-0 z-10" style={{background: "#3872FA33"}}>
+              <TableHeader
+                className="sticky top-0 z-10"
+                style={{ background: "#3872FA33" }}
+              >
                 <TableRow>
                   <TableHead>Project</TableHead>
                   <TableHead>Sub Project</TableHead>
@@ -243,28 +260,55 @@ const ProjectConfigurationPage = () => {
                 {filteredProjects.length > 0 ? (
                   filteredProjects.map((project) => (
                     <TableRow key={project.id}>
-                      <TableCell className="font-medium">{project.project_name}</TableCell>
+                      <TableCell className="font-medium">
+                        {project.project_name}
+                      </TableCell>
                       <TableCell>{project.sub_project_name || "-"}</TableCell>
                       <TableCell>{project.project_id || "-"}</TableCell>
                       <TableCell>
-                        <Badge variant={project.status === "Active" ? "default" : "secondary"}>
+                        <Badge
+                          variant={
+                            project.status === "Active"
+                              ? "default"
+                              : "secondary"
+                          }
+                        >
                           {project.status}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         {project.website ? (
-                          <a href={project.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                          <a
+                            href={project.website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline"
+                          >
                             {project.website}
                           </a>
-                        ) : "-"}
+                        ) : (
+                          "-"
+                        )}
                       </TableCell>
                       <TableCell>{project.pic_name || "-"}</TableCell>
                       <TableCell>{project.owner_name || "-"}</TableCell>
-                      <TableCell className="text-right">{project.impressions?.toLocaleString() || "0"}</TableCell>
-                      <TableCell className="text-right">{project.clicks?.toLocaleString() || "0"}</TableCell>
-                      <TableCell className="max-w-[100px] truncate text-right">{project.join || "-"}</TableCell>
-                      <TableCell className="max-w-xs truncate">{project.keywords || "-"}</TableCell>
-                      <TableCell>{project.due_date ? format(new Date(project.due_date), "dd MMM yyyy") : "-"}</TableCell>
+                      <TableCell className="text-right">
+                        {project.impressions?.toLocaleString() || "0"}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {project.clicks?.toLocaleString() || "0"}
+                      </TableCell>
+                      <TableCell className="max-w-[100px] truncate text-right">
+                        {project.join || "-"}
+                      </TableCell>
+                      <TableCell className="max-w-xs truncate">
+                        {project.keywords || "-"}
+                      </TableCell>
+                      <TableCell>
+                        {project.due_date
+                          ? format(new Date(project.due_date), "dd/MM/yyyy")
+                          : "-"}
+                      </TableCell>
                       <TableCell className="text-center">
                         <div className="flex justify-center gap-2">
                           <Button
@@ -277,13 +321,13 @@ const ProjectConfigurationPage = () => {
                           </Button>
 
                           {/* {hasPermission("seo_project.delete") && ( */}
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              onClick={() => handleDeleteClick(project)}
-                            >
-                              <Trash2 className="h-4 w-4" /> Delete
-                            </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleDeleteClick(project)}
+                          >
+                            <Trash2 className="h-4 w-4" /> Delete
+                          </Button>
                           {/* )} */}
                         </div>
                       </TableCell>
@@ -291,7 +335,10 @@ const ProjectConfigurationPage = () => {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={13} className="h-24 text-center text-muted-foreground">
+                    <TableCell
+                      colSpan={13}
+                      className="h-24 text-center text-muted-foreground"
+                    >
                       No projects found.
                     </TableCell>
                   </TableRow>

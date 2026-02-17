@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { PageHeading } from "@/components/shared/PageHeading";
 import { Label } from "@/components/ui/label";
+import { format } from "date-fns";
 import {
   Select,
   SelectContent,
@@ -64,7 +65,7 @@ const AhrefsReportPage = () => {
         // If competitor selected, switch to competitor mode
         if (selectedCompetitor) {
           url = `https://staging-api.corepath360.com/seo/ahrefs/report/?data_type=competitor&project_id=${selectedProject}&company=${encodeURIComponent(
-            selectedCompetitor
+            selectedCompetitor,
           )}`;
         }
 
@@ -74,7 +75,7 @@ const AhrefsReportPage = () => {
         // Update competitors list from filters (only when no competitor selected yet)
         if (!selectedCompetitor && res.data.filters?.available_companies) {
           setCompetitors(
-            res.data.filters.available_companies.map((c) => c.name)
+            res.data.filters.available_companies.map((c) => c.name),
           );
         }
       } catch (err) {
@@ -160,7 +161,7 @@ const AhrefsReportPage = () => {
                 <TableRow>
                   <TableHead>Unique Domain</TableHead>
                   <TableHead>Live Link</TableHead>
-                  <TableHead>Account</TableHead>
+                  {/* <TableHead>Account</TableHead> */}
                   <TableHead>Domain Rating</TableHead>
                   <TableHead>URL Rating</TableHead>
                   <TableHead>Domain Traffic</TableHead>
@@ -194,7 +195,7 @@ const AhrefsReportPage = () => {
                         {row.live_link || "-"}
                       </a>
                     </TableCell>
-                    <TableCell>{row.vendor || "Ahrefs Import"}</TableCell>
+                    {/* <TableCell>{row.vendor || "Ahrefs Import"}</TableCell> */}
                     <TableCell>{row.domain_rating || "-"}</TableCell>
                     <TableCell>{row.url_rating || "-"}</TableCell>
                     <TableCell>{row.domain_traffic || "-"}</TableCell>
@@ -212,9 +213,23 @@ const AhrefsReportPage = () => {
                     <TableCell>
                       {row.redirect_chain_status_codes || "-"}
                     </TableCell>
-                    <TableCell>{row.follow || "-"}</TableCell>
-                    <TableCell>{row.first_seen || "-"}</TableCell>
-                    <TableCell>{row.last_seen || "-"}</TableCell>
+                    <TableCell>
+                      {row.follow === "Follow"
+                        ? "Yes"
+                        : row.follow === "NoFollow"
+                          ? "No"
+                          : "-"}
+                    </TableCell>
+                    <TableCell>
+                      {row.first_seen
+                        ? format(new Date(row.first_seen), "dd/MM/yyyy")
+                        : "-"}
+                    </TableCell>
+                    <TableCell>
+                      {row.last_seen
+                        ? format(new Date(row.last_seen), "dd/MM/yyyy")
+                        : "-"}
+                    </TableCell>
                     <TableCell>{row.lost === null ? "No" : "Yes"}</TableCell>
                   </TableRow>
                 ))}

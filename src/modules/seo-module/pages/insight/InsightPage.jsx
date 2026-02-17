@@ -35,7 +35,7 @@ const ITEMS_PER_PAGE = 10;
 const InsightPage = () => {
   const dispatch = useDispatch();
   const { purchased, samples, competitorPool, loading } = useSelector(
-    (state) => state.insight
+    (state) => state.insight,
   );
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -62,7 +62,7 @@ const InsightPage = () => {
         row?.price_usd ||
         row?.discovered_date ||
         row?.created_date ||
-        row?.first_seen
+        row?.first_seen,
     )
     .map((row, index) => ({
       no: index + 1,
@@ -117,9 +117,14 @@ const InsightPage = () => {
         </div>
 
         {loading ? (
-          <div className="text-center py-12"><TableSkeleton /></div>
+          <div className="text-center py-12">
+            <TableSkeleton />
+          </div>
         ) : (
-          <InsightTable data={allData} onOpenVendorSummary={() => setModalOpen(true)} />
+          <InsightTable
+            data={allData}
+            onOpenVendorSummary={() => setModalOpen(true)}
+          />
         )}
       </main>
 
@@ -135,10 +140,10 @@ const InsightPage = () => {
                 <TableHeader className="sticky top-0 bg-background z-10">
                   <TableRow>
                     <TableHead>No</TableHead>
-                    <TableHead>Associated</TableHead>
+                    {/* <TableHead>Associated</TableHead> */}
                     <TableHead>Vendors</TableHead>
                     <TableHead>Price</TableHead>
-                    <TableHead>Note</TableHead>
+                    {/* <TableHead>Note</TableHead> */}
                     <TableHead>Discovered Date</TableHead>
                     <TableHead>Discovered By</TableHead>
                     <TableHead>Overlap Competitors</TableHead>
@@ -150,10 +155,10 @@ const InsightPage = () => {
                     paginatedData.map((item) => (
                       <TableRow key={item.no}>
                         <TableCell>{item.no}</TableCell>
-                        <TableCell>{item.associated}</TableCell>
+                        {/* <TableCell>{item.associated}</TableCell> */}
                         <TableCell>{item.vendors}</TableCell>
                         <TableCell>{item.price}</TableCell>
-                        <TableCell>{item.note}</TableCell>
+                        {/* <TableCell>{item.note}</TableCell> */}
                         <TableCell>{item.discoveredDate}</TableCell>
                         <TableCell>{item.discoveredBy}</TableCell>
                         <TableCell>{item.overlapCompetitors}</TableCell>
@@ -211,7 +216,7 @@ const InsightPage = () => {
                         return <PaginationEllipsis key={page} />;
                       }
                       return null;
-                    }
+                    },
                   )}
 
                   <PaginationItem>

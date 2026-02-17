@@ -154,12 +154,12 @@ const PerformanceOverview = () => {
     setSelectedProjects((prev) =>
       prev.includes(projectId)
         ? prev.filter((p) => p !== projectId)
-        : [...prev, projectId]
+        : [...prev, projectId],
     );
   };
 
   return (
- <div className="space-y-8">
+    <div className="space-y-8">
       <PageHeading pageTitle="Performance Overview" />
       {/* Filters */}
       <div className="flex justify-end gap-4 flex-wrap">
@@ -176,7 +176,7 @@ const PerformanceOverview = () => {
                   ? dateRange.to
                     ? `${format(dateRange.from, "PPP")} - ${format(
                         dateRange.to,
-                        "PPP"
+                        "PPP",
                       )}`
                     : format(dateRange.from, "PPP")
                   : "Select range"}
@@ -228,7 +228,7 @@ const PerformanceOverview = () => {
                             "mr-2 h-4 w-4",
                             selectedProjects.includes(project.project_id)
                               ? "opacity-100"
-                              : "opacity-0"
+                              : "opacity-0",
                           )}
                         />
                         {project.project_name}
@@ -267,7 +267,7 @@ const PerformanceOverview = () => {
 
         {selectedProjects.map((projectId) => {
           const selected = data.projects.find(
-            (p) => p.project_id === projectId
+            (p) => p.project_id === projectId,
           );
           const projectName = selected?.project_name || projectId;
           const projectData = tableDataByProject[projectName] || [];
@@ -287,19 +287,13 @@ const PerformanceOverview = () => {
                     style={{ background: "#3872FA33" }}
                   >
                     <TableRow>
-                      <TableHead>Date</TableHead>
+                      {/* <TableHead>Date</TableHead> */}
                       <TableHead className="text-right">Impression</TableHead>
                       <TableHead className="text-right">Clicks</TableHead>
                       <TableHead className="text-right">CTR</TableHead>
-                      <TableHead>Note</TableHead>
+                      {/* <TableHead>Note</TableHead> */}
                       <TableHead className="text-right">Position</TableHead>
-                      <TableHead className="text-right">
-                        First Deposit
-                      </TableHead>
                       <TableHead className="text-right">Total User</TableHead>
-                      <TableHead className="text-right">
-                        Total Deposit
-                      </TableHead>
                       <TableHead className="text-right">
                         Organic Search
                       </TableHead>
@@ -320,15 +314,21 @@ const PerformanceOverview = () => {
                       </TableHead>
                       <TableHead className="text-right">Register</TableHead>
                       <TableHead className="text-right">Join</TableHead>
+                      <TableHead className="text-right">
+                        First Deposit
+                      </TableHead>
+                      <TableHead className="text-right">
+                        Total Deposit
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {paginated.length > 0 ? (
                       paginated.map((row, index) => (
                         <TableRow key={index}>
-                          <TableCell className="font-medium">
+                          {/* <TableCell className="font-medium">
                             {row.period}
-                          </TableCell>
+                          </TableCell> */}
                           <TableCell className="text-right">
                             {row.impressions?.toLocaleString() || "-"}
                           </TableCell>
@@ -338,18 +338,12 @@ const PerformanceOverview = () => {
                           <TableCell className="text-right">
                             {row.ctr || "-"}
                           </TableCell>
-                          <TableCell>{row.note || "-"}</TableCell>
+                          {/* <TableCell>{row.note || "-"}</TableCell> */}
                           <TableCell className="text-right">
                             {row.position || "-"}
                           </TableCell>
                           <TableCell className="text-right">
-                            {row.first_deposit?.toLocaleString() || "-"}
-                          </TableCell>
-                          <TableCell className="text-right">
                             {row.total_user?.toLocaleString() || "-"}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {row.total_deposit?.toLocaleString() || "-"}
                           </TableCell>
                           <TableCell className="text-right">
                             {row.organic_search?.toLocaleString() || "-"}
@@ -380,6 +374,12 @@ const PerformanceOverview = () => {
                           </TableCell>
                           <TableCell className="text-right">
                             {row.join?.toLocaleString() || "-"}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {row.first_deposit?.toLocaleString() || "-"}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {row.total_deposit?.toLocaleString() || "-"}
                           </TableCell>
                         </TableRow>
                       ))
@@ -437,7 +437,7 @@ const PerformanceOverview = () => {
                           return <PaginationEllipsis key={page} />;
                         }
                         return null;
-                      }
+                      },
                     )}
 
                     <PaginationItem>
@@ -445,7 +445,7 @@ const PerformanceOverview = () => {
                         onClick={() =>
                           changePage(
                             projectId,
-                            Math.min(totalPages, currentPage + 1)
+                            Math.min(totalPages, currentPage + 1),
                           )
                         }
                         disabled={currentPage === totalPages}

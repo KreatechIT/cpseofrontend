@@ -28,7 +28,11 @@ const InsightTable = ({ data, onOpenVendorSummary }) => {
   }, [data]);
 
   if (!data || data.length === 0) {
-    return <p className="text-center py-8 text-muted-foreground">No data available</p>;
+    return (
+      <p className="text-center py-8 text-muted-foreground">
+        No data available
+      </p>
+    );
   }
 
   const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE);
@@ -39,14 +43,17 @@ const InsightTable = ({ data, onOpenVendorSummary }) => {
     <div className="space-y-4">
       <ScrollArea className="rounded-md border">
         <Table>
-          <TableHeader className="sticky top-0 bg-background z-10" style={{ background: "#3872FA33" }}>
+          <TableHeader
+            className="sticky top-0 bg-background z-10"
+            style={{ background: "#3872FA33" }}
+          >
             <TableRow>
               <TableHead className="w-[50px]">No</TableHead>
               <TableHead>Unique Domain</TableHead>
               <TableHead>Live Link</TableHead>
               <TableHead>Domain Rating</TableHead>
               <TableHead>URL Rating</TableHead>
-              <TableHead>Note</TableHead>
+              {/* <TableHead>Note</TableHead> */}
               <TableHead>Domain Authority</TableHead>
               <TableHead>Page Authority</TableHead>
               <TableHead>Spam Score</TableHead>
@@ -76,30 +83,29 @@ const InsightTable = ({ data, onOpenVendorSummary }) => {
                   {row.unique_domain || "-"}
                 </TableCell>
                 <TableCell className="max-w-[200px] truncate">
-                    {row.live_link ? (
-                        <a
-                          href={row.live_link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:underline"
-                        >
-                          {new URL(row.live_link).pathname}
-                        </a>
-                      ) : (
-                        "-"
-                    )}
+                  {row.live_link ? (
+                    <a
+                      href={row.live_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
+                      {new URL(row.live_link).pathname}
+                    </a>
+                  ) : (
+                    "-"
+                  )}
                 </TableCell>
                 <TableCell>{row.domain_rating || "-"}</TableCell>
                 <TableCell>
                   {row.url_rating || row.page_authority || "-"}
                 </TableCell>
-                <TableCell>{row.remark || row.note || "-"}</TableCell>
+                {/* <TableCell>{row.remark || row.note || "-"}</TableCell> */}
                 <TableCell>{row.domain_authority || "-"}</TableCell>
                 <TableCell>{row.page_authority || "-"}</TableCell>
                 <TableCell>{row.spam_score || "-"}</TableCell>
                 <TableCell className="max-w-[200px] truncate">
                   {row.target_url_1 || row.target_url || "-"}
-
                 </TableCell>
                 <TableCell>
                   {row.keyword_1 || row.anchor || row.anchor_text || "-"}

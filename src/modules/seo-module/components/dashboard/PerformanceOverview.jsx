@@ -113,15 +113,6 @@ const PerformanceOverview = ({ overview }) => {
   totals.avgCtr = totalRows > 0 ? (totals.totalClicks / totals.totalImpressions * 100).toFixed(2) : 0;
   totals.avgPosition = totalRows > 0 ? (Object.values(filteredDataByProject).flat().reduce((sum, r) => sum + (r.position || 0), 0) / totalRows).toFixed(1) : 0;
 
-  // Prepare chart data by merging all project data
-  const allData = Object.values(filteredDataByProject).flat();
-  const chartData = allData.map(row => ({
-    date: row.period,
-    analytics: row.total_user || 0,
-    searchConsole: row.clicks || 0,
-    conversion: row.join || 0,
-  }));
-
   // Quick filter buttons (update date range)
   const handleQuickFilter = (days) => {
     const to = new Date();
@@ -146,7 +137,6 @@ const PerformanceOverview = ({ overview }) => {
     <div className="space-y-8">
       {/* Filters */}
       <div className="flex justify-between items-center flex-wrap gap-4">
-        {/* Quick buttons */}
         {/* Quick buttons with active state */}
         <div className="flex gap-2">
           <Button
@@ -156,7 +146,7 @@ const PerformanceOverview = ({ overview }) => {
               "transition-colors",
               dateRange.from && dateRange.to && 
               Math.round((new Date() - dateRange.from) / (1000 * 60 * 60 * 24)) === 1
-                ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                ? "bg-primary text-primary-foreground hover:bg-primary/90 border-primary shadow-sm"
                 : ""
             )}
             onClick={() => handleQuickFilter(1)}
@@ -171,7 +161,7 @@ const PerformanceOverview = ({ overview }) => {
               "transition-colors",
               dateRange.from && dateRange.to && 
               Math.round((new Date() - dateRange.from) / (1000 * 60 * 60 * 24)) === 7
-                ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                ? "bg-primary text-primary-foreground hover:bg-primary/90 border-primary shadow-sm"
                 : ""
             )}
             onClick={() => handleQuickFilter(7)}
@@ -186,7 +176,7 @@ const PerformanceOverview = ({ overview }) => {
               "transition-colors",
               dateRange.from && dateRange.to && 
               Math.round((new Date() - dateRange.from) / (1000 * 60 * 60 * 24)) === 28
-                ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                ? "bg-primary text-primary-foreground hover:bg-primary/90 border-primary shadow-sm"
                 : ""
             )}
             onClick={() => handleQuickFilter(28)}
@@ -201,7 +191,7 @@ const PerformanceOverview = ({ overview }) => {
               "transition-colors",
               dateRange.from && dateRange.to && 
               Math.round((new Date() - dateRange.from) / (1000 * 60 * 60 * 24)) === 90
-                ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                ? "bg-primary text-primary-foreground hover:bg-primary/90 border-primary shadow-sm"
                 : ""
             )}
             onClick={() => handleQuickFilter(90)}
@@ -212,7 +202,7 @@ const PerformanceOverview = ({ overview }) => {
 
         {/* Date Range & Project Select */}
         <div className="flex gap-4 items-center">
-          <div className="w-[350px]">
+          <div className="w-[360px]">
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline" className="w-full justify-start text-left font-normal">
@@ -230,7 +220,7 @@ const PerformanceOverview = ({ overview }) => {
             </Popover>
           </div>
 
-          <div className="w-[200px]">
+          <div className="w-[300px]">
             <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
                 <Button variant="outline" role="combobox" className="w-full justify-between">
@@ -263,12 +253,12 @@ const PerformanceOverview = ({ overview }) => {
             </Popover>
           </div>
 
-          <div className="w-[200px]">
+          <div className="w-auto">
             <Select value={period} onValueChange={setPeriod}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger>
                 <SelectValue placeholder="Per Day" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="w-full">
                 <SelectItem value="day">Per Day</SelectItem>
                 <SelectItem value="week">Per Week</SelectItem>
                 <SelectItem value="month">Per Month</SelectItem>
@@ -281,117 +271,133 @@ const PerformanceOverview = ({ overview }) => {
 
       {/* Metrics Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-        <div className=" border border-[#E5E6E6] p-4 rounded-lg text-center">
+        <div className="border border-[#E5E6E6] p-4 rounded-lg text-center">
           <p className="text-2xl font-bold">{totals.totalClicks.toLocaleString()}</p>
           <p className="text-sm text-muted-foreground">Total Clicks</p>
         </div>
-        <div className=" border border-[#E5E6E6] p-4 rounded-lg text-center">
+        <div className="border border-[#E5E6E6] p-4 rounded-lg text-center">
           <p className="text-2xl font-bold">{totals.totalImpressions.toLocaleString()}</p>
           <p className="text-sm text-muted-foreground">Total Impressions</p>
         </div>
-        <div className=" border border-[#E5E6E6] p-4 rounded-lg text-center">
+        <div className="border border-[#E5E6E6] p-4 rounded-lg text-center">
           <p className="text-2xl font-bold">{totals.avgCtr}%</p>
           <p className="text-sm text-muted-foreground">Average CTR</p>
         </div>
-        <div className=" border border-[#E5E6E6] p-4 rounded-lg text-center">
+        <div className="border border-[#E5E6E6] p-4 rounded-lg text-center">
           <p className="text-2xl font-bold">{totals.avgPosition}</p>
           <p className="text-sm text-muted-foreground">Average Position</p>
         </div>
-        <div className=" border border-[#E5E6E6] p-4 rounded-lg text-center">
+        <div className="border border-[#E5E6E6] p-4 rounded-lg text-center">
           <p className="text-2xl font-bold">{totals.totalUser.toLocaleString()}</p>
           <p className="text-sm text-muted-foreground">Total User</p>
         </div>
-        <div className=" border border-[#E5E6E6] p-4 rounded-lg text-center">
+        <div className="border border-[#E5E6E6] p-4 rounded-lg text-center">
           <p className="text-2xl font-bold">{totals.organicUser.toLocaleString()}</p>
           <p className="text-sm text-muted-foreground">Organic User</p>
         </div>
-        <div className=" border border-[#E5E6E6] p-4 rounded-lg text-center">
+        <div className="border border-[#E5E6E6] p-4 rounded-lg text-center">
           <p className="text-2xl font-bold">{totals.directUser.toLocaleString()}</p>
           <p className="text-sm text-muted-foreground">Direct User</p>
         </div>
-        <div className=" border border-[#E5E6E6] p-4 rounded-lg text-center">
+        <div className="border border-[#E5E6E6] p-4 rounded-lg text-center">
           <p className="text-2xl font-bold">{totals.referralUser.toLocaleString()}</p>
           <p className="text-sm text-muted-foreground">Referral User</p>
         </div>
       </div>
 
-      {/* Chart + Right Stats */}
+      {/* Charts + Right Stats */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Chart - col 10 */}
-        <div className="lg:col-span-10 border rounded-lg p-6 ">
-          <h3 className="text-lg font-semibold mb-4">Performance Graph</h3>
-          <ResponsiveContainer width="100%" height={400}>
-            <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <XAxis 
-                dataKey="date" 
-                tickFormatter={(date) => format(new Date(date), "dd MMM")} 
-                axisLine={false}
-                tickLine={false}
-              />
-              <YAxis axisLine={false} tickLine={false} />
-              <Tooltip
-                formatter={(value) => value.toLocaleString()}
-                labelFormatter={(date) => format(new Date(date), "EEEE, MMM dd")}
-                contentStyle={{ 
-                  backgroundColor: 'white', 
-                  border: '1px solid #e5e7eb', 
-                  borderRadius: '8px', 
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)' 
-                }}
-              />
-              <Legend verticalAlign="top" height={36} wrapperStyle={{ paddingBottom: '10px' }} />
-              <Line type="monotone" dataKey="analytics" stroke="#3872FA" strokeWidth={2} dot={false} name="Analytics (Total User)" />
-              <Line type="monotone" dataKey="searchConsole" stroke="#0EB170" strokeWidth={2} dot={false} name="Search Console (Clicks)" />
-              <Line type="monotone" dataKey="conversion" stroke="#B94DF3" strokeWidth={2} dot={false} name="Conversion (Join)" />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+          {selectedProjects.map(projectId => {
+            const project = overview.projects.find(p => p.project_id === projectId);
+            if (!project) return null;
 
-        {/* Right Stats - col 2 */}
-        <div className="lg:col-span-2 border rounded-lg p-6 flex flex-col justify-between">
-          <div>
-            <div className="flex justify-between items-center">
-              <h4 className="text-base font-semibold mb-4">Inquiry</h4>
-              <p className="text-2xl font-bold">{totals.totalInquiry.toLocaleString()}</p>
-            </div>
-            <div className="mt-3 space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Download</span>
-                <span>{totals.inquiryDownload.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">WhatsApp</span>
-                <span>{totals.inquiryWhatsapp.toLocaleString()}</span>
-              </div>
-            </div>
-          </div>
+            const projectName = project.project_name || project.project_id;
+            const projectData = filteredDataByProject[projectName] || [];
 
-          <div className="mt-6">
-            <h4 className="text-base font-semibold mb-4">Conversion</h4>
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Register</span>
-                <span>{totals.register.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Join</span>
-                <span>{totals.join.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">First Deposit</span>
-                <span>RM {totals.firstDeposit.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between font-medium">
-                <span>Total Deposit</span>
-                <span>RM {totals.totalDeposit.toLocaleString()}</span>
-              </div>
-            </div>
-          </div>
-        </div>
+            // Project-specific chart data
+            const projectChartData = projectData.map(row => ({
+              date: row.period,
+              analytics: row.total_user || 0,
+              searchConsole: row.clicks || 0,
+              conversion: row.join || 0,
+            })).sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            return (   
+              <>          
+                <div className="lg:col-span-10 space-y-8">
+                  <div key={projectId} className="border rounded-lg p-6 bg-card">
+                    <h3 className="text-lg font-semibold mb-4">{projectName} Performance</h3>
+                    <ResponsiveContainer width="100%" height={400}>
+                      <LineChart data={projectChartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                        <XAxis 
+                          dataKey="date" 
+                          tickFormatter={(date) => format(new Date(date), "dd MMM")} 
+                          axisLine={false}
+                          tickLine={false}
+                        />
+                        <YAxis axisLine={false} tickLine={false} />
+                        <Tooltip
+                          formatter={(value) => value.toLocaleString()}
+                          labelFormatter={(date) => format(new Date(date), "EEEE, MMM dd")}
+                          contentStyle={{ 
+                            backgroundColor: 'white', 
+                            border: '1px solid #e5e7eb', 
+                            borderRadius: '8px', 
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)' 
+                          }}
+                        />
+                        <Legend verticalAlign="top" height={36} wrapperStyle={{ paddingBottom: '10px' }} />
+                        <Line type="monotone" dataKey="analytics" stroke="#3872FA" strokeWidth={2} dot={false} name="Analytics (Total User)" />
+                        <Line type="monotone" dataKey="searchConsole" stroke="#0EB170" strokeWidth={2} dot={false} name="Search Console (Clicks)" />
+                        <Line type="monotone" dataKey="conversion" stroke="#B94DF3" strokeWidth={2} dot={false} name="Conversion (Join)" />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div> 
+                </div>
+                <div className="lg:col-span-2 border rounded-lg p-6 flex flex-col justify-between bg-muted/50">
+                  <div>
+                    <div className="flex justify-between items-center mb-4">
+                      <h4 className="text-base font-semibold">Inquiry</h4>
+                      <p className="text-2xl font-bold">{totals.totalInquiry.toLocaleString()}</p>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Download</span>
+                        <span>{totals.inquiryDownload.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">WhatsApp</span>
+                        <span>{totals.inquiryWhatsapp.toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-6">
+                    <h4 className="text-base font-semibold mb-4">Conversion</h4>
+                    <div className="space-y-3 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Register</span>
+                        <span>{totals.register.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Join</span>
+                        <span>{totals.join.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">First Deposit</span>
+                        <span>RM {totals.firstDeposit.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between font-medium">
+                        <span>Total Deposit</span>
+                        <span>RM {totals.totalDeposit.toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>        
+            );
+          })}        
       </div>
-
-      {/* You can keep project tables if you want — commented out for now */}
-      {/* ... your existing project tables with pagination ... */}
     </div>
   );
 };

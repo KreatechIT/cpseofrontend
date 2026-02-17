@@ -14,7 +14,10 @@ const SamplePoolTable = ({ samples }) => {
   return (
     <ScrollArea className="rounded-md border h-[calc(100vh-200px)]">
       <Table>
-        <TableHeader className="sticky top-0 z-10" style={{background: "#3872FA33"}}>
+        <TableHeader
+          className="sticky top-0 z-10"
+          style={{ background: "#3872FA33" }}
+        >
           <TableRow>
             <TableHead>No.</TableHead>
             <TableHead>Discovered Date</TableHead>
@@ -30,8 +33,8 @@ const SamplePoolTable = ({ samples }) => {
             <TableHead>Domain Authority</TableHead>
             <TableHead>Page Authority</TableHead>
             <TableHead>Spam Score</TableHead>
-            <TableHead>Domain Created Date</TableHead>
-            <TableHead>Domain Expiration Date</TableHead>
+            <TableHead>Domain Created </TableHead>
+            <TableHead>Domain Expiration </TableHead>
             <TableHead>Domain Age</TableHead>
             <TableHead>Overlap Competitors</TableHead>
             <TableHead>Project Consists Link</TableHead>
@@ -47,7 +50,11 @@ const SamplePoolTable = ({ samples }) => {
             samples.map((sample, index) => (
               <TableRow key={sample.id}>
                 <TableCell>{index + 1}</TableCell>
-                <TableCell>{sample.discovered_date ? format(new Date(sample.discovered_date), "dd MMM yyyy") : "-"}</TableCell>
+                <TableCell>
+                  {sample.discovered_date
+                    ? format(new Date(sample.discovered_date), "dd/MM/yyyy")
+                    : "-"}
+                </TableCell>
                 <TableCell>{sample.discovered_by_name || "-"}</TableCell>
                 <TableCell>{sample.vendor_name || "-"}</TableCell>
                 <TableCell>{sample.category || "-"}</TableCell>
@@ -60,22 +67,40 @@ const SamplePoolTable = ({ samples }) => {
                 <TableCell>{sample.domain_authority || "-"}</TableCell>
                 <TableCell>{sample.page_authority || "-"}</TableCell>
                 <TableCell>{sample.spam_score || "-"}</TableCell>
-                <TableCell>{sample.domain_created_date ? format(new Date(sample.domain_created_date), "dd MMM yyyy") : "-"}</TableCell>
-                <TableCell>{sample.domain_expiration_date ? format(new Date(sample.domain_expiration_date), "dd MMM yyyy") : "-"}</TableCell>
+                <TableCell>
+                  {sample.domain_created_date
+                    ? format(new Date(sample.domain_created_date), "dd/MM/yyyy")
+                    : "-"}
+                </TableCell>
+                <TableCell>
+                  {sample.domain_expiration_date
+                    ? format(
+                        new Date(sample.domain_expiration_date),
+                        "MMM yyyy",
+                      )
+                    : "-"}
+                </TableCell>
                 <TableCell>{sample.domain_age || "-"}</TableCell>
                 <TableCell>{sample.overlap_competitors || "-"}</TableCell>
                 <TableCell>{sample.project_consists_link || "-"}</TableCell>
                 {/* <TableCell>{sample.vendor || "-"}</TableCell> */}
                 <TableCell>{sample.lowest_price_usd_general || "-"}</TableCell>
                 <TableCell>{sample.lowest_price_usd_niche || "-"}</TableCell>
-                <TableCell>{sample.lowest_price_date ? format(new Date(sample.lowest_price_date), "dd MMM yyyy") : "-"}</TableCell>
+                <TableCell>
+                  {sample.lowest_price_date
+                    ? format(new Date(sample.lowest_price_date), "dd/MM/yyyy")
+                    : "-"}
+                </TableCell>
                 {/* <TableCell className="max-w-xs truncate">{sample.remark || "-"}</TableCell> */}
-                <TableCell className="max-w-xs truncate">  </TableCell>
+                <TableCell className="max-w-xs truncate"> </TableCell>
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={24} className="h-24 text-center text-muted-foreground">
+              <TableCell
+                colSpan={24}
+                className="h-24 text-center text-muted-foreground"
+              >
                 No samples found.
               </TableCell>
             </TableRow>

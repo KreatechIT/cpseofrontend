@@ -92,23 +92,32 @@ const VendorOverview = () => {
   }, []);
 
   if (loading) {
-    return <div className="text-center py-12 text-muted-foreground">Loading Vendor Overview...</div>;
+    return (
+      <div className="text-center py-12 text-muted-foreground">
+        Loading Vendor Overview...
+      </div>
+    );
   }
 
   if (error || !data) {
-    return <div className="text-center py-12 text-red-600">Error loading data. Please try again.</div>;
+    return (
+      <div className="text-center py-12 text-red-600">
+        Error loading data. Please try again.
+      </div>
+    );
   }
 
   // Extract options from API response
   const dateRange = data.filters?.date_range || {};
-  const availableVendors = data.filters?.available_vendors?.map((v) => v.name) || [];
+  const availableVendors =
+    data.filters?.available_vendors?.map((v) => v.name) || [];
 
   // Toggle project selection
   const toggleProject = (projectId) => {
     setSelectedCompareProjects((prev) =>
       prev.includes(projectId)
         ? prev.filter((p) => p !== projectId)
-        : [...prev, projectId]
+        : [...prev, projectId],
     );
   };
 
@@ -140,15 +149,18 @@ const VendorOverview = () => {
           <Label className="mb-3">Date Wise Filter</Label>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="w-full justify-start text-left font-normal">
+              <Button
+                variant="outline"
+                className="w-full justify-start text-left font-normal"
+              >
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {dateFilter.from
                   ? dateFilter.to
                     ? `${format(dateFilter.from, "PPP")} - ${format(dateFilter.to, "PPP")}`
                     : format(dateFilter.from, "PPP")
                   : dateRange.min_date && dateRange.max_date
-                  ? `${format(new Date(dateRange.min_date), "PPP")} - ${format(new Date(dateRange.max_date), "PPP")}`
-                  : "Select date range"}
+                    ? `${format(new Date(dateRange.min_date), "PPP")} - ${format(new Date(dateRange.max_date), "PPP")}`
+                    : "Select date range"}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
@@ -193,7 +205,9 @@ const VendorOverview = () => {
                         <Check
                           className={cn(
                             "mr-2 h-4 w-4",
-                            selectedCompareProjects.includes(pid) ? "opacity-100" : "opacity-0"
+                            selectedCompareProjects.includes(pid)
+                              ? "opacity-100"
+                              : "opacity-0",
                           )}
                         />
                         {pid}
@@ -229,7 +243,20 @@ const VendorOverview = () => {
               <SelectValue placeholder="Select month" />
             </SelectTrigger>
             <SelectContent>
-              {["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"].map((month) => (
+              {[
+                "JAN",
+                "FEB",
+                "MAR",
+                "APR",
+                "MAY",
+                "JUN",
+                "JUL",
+                "AUG",
+                "SEP",
+                "OCT",
+                "NOV",
+                "DEC",
+              ].map((month) => (
                 <SelectItem key={month} value={month}>
                   {month}
                 </SelectItem>
@@ -259,7 +286,9 @@ const VendorOverview = () => {
       <div className="space-y-10">
         {selectedCompareProjects.length === 0 && tableData.length > 0 && (
           <div className="border rounded-lg bg-card">
-            <div className="p-4 font-semibold text-lg">All Projects - Vendor Overview</div>
+            <div className="p-4 font-semibold text-lg">
+              All Projects - Vendor Overview
+            </div>
             <ScrollArea className="h-[600px]">
               <Table>
                 <TableHeader className="sticky top-0 bg-background z-10">
@@ -267,7 +296,7 @@ const VendorOverview = () => {
                     <TableHead>Vendor</TableHead>
                     <TableHead>Domain Rating</TableHead>
                     <TableHead>Domain Authority</TableHead>
-                    <TableHead>Note</TableHead>
+                    {/* <TableHead>Note</TableHead> */}
                     <TableHead>Page Authority</TableHead>
                     <TableHead>Spam Score</TableHead>
                     <TableHead>Latest Link Index Rate (%)</TableHead>
@@ -281,7 +310,7 @@ const VendorOverview = () => {
                       <TableCell>{row.vendor}</TableCell>
                       <TableCell>{row.domainRating}</TableCell>
                       <TableCell>{row.domainAuthority}</TableCell>
-                      <TableCell>{row.note}</TableCell>
+                      {/* <TableCell>{row.note}</TableCell> */}
                       <TableCell>{row.pageAuthority}</TableCell>
                       <TableCell>{row.spamScore}</TableCell>
                       <TableCell>{row.latestLinkIndexRate}</TableCell>
@@ -298,7 +327,9 @@ const VendorOverview = () => {
 
         {selectedCompareProjects.length > 0 &&
           selectedCompareProjects.map((projectId) => {
-            const selected = data.projects?.find((p) => p.project_id === projectId);
+            const selected = data.projects?.find(
+              (p) => p.project_id === projectId,
+            );
             const projectName = selected?.project_name || projectId;
             // For now, same data (extend with real per-project later)
             const projectData = tableData;

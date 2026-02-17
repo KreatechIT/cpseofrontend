@@ -78,8 +78,8 @@ const PurchasedPoolTable = ({ purchased }) => {
               <TableHead>Domain Authority</TableHead>
               <TableHead>Page Authority</TableHead>
               <TableHead>Spam Score</TableHead>
-              <TableHead>Domain Created Date</TableHead>
-              <TableHead>Domain Expiration Date</TableHead>
+              <TableHead>Domain Created </TableHead>
+              <TableHead>Domain Expiration </TableHead>
               <TableHead>Domain Age</TableHead>
               <TableHead>Remark</TableHead>
             </TableRow>
@@ -99,7 +99,9 @@ const PurchasedPoolTable = ({ purchased }) => {
                     ? format(new Date(item.created), "dd MMM yyyy")
                     : "-"}
                 </TableCell>
-                <TableCell> {item.order_month
+                <TableCell>
+                  {" "}
+                  {item.order_month
                     ? format(new Date(item.order_month), "dd MMM yyyy")
                     : "-"}
                 </TableCell>
@@ -135,8 +137,12 @@ const PurchasedPoolTable = ({ purchased }) => {
                     {item.live_link}
                   </a>
                 </TableCell>
-                <TableCell>{item.latest_live_link_index || "Not Indexed"}</TableCell>
-                <TableCell>{item.unique_domain_index || "Not Indexed"}</TableCell>
+                <TableCell>
+                  {item.latest_live_link_index || "Not Indexed"}
+                </TableCell>
+                <TableCell>
+                  {item.unique_domain_index || "Not Indexed"}
+                </TableCell>
                 <TableCell>{item.keyword_1 || "-"}</TableCell>
                 <TableCell>
                   {item.target_url_1 ? (
@@ -182,15 +188,12 @@ const PurchasedPoolTable = ({ purchased }) => {
                 <TableCell>{item.spam_score || "-"}</TableCell>
                 <TableCell>
                   {item.domain_created_date
-                    ? format(new Date(item.domain_created_date), "dd MMM yyyy")
+                    ? format(new Date(item.domain_created_date), "dd/MM/yyyy")
                     : "-"}
                 </TableCell>
                 <TableCell>
                   {item.domain_expiration_date
-                    ? format(
-                        new Date(item.domain_expiration_date),
-                        "dd MMM yyyy"
-                      )
+                    ? format(new Date(item.domain_expiration_date), "MMM yyyy")
                     : "-"}
                 </TableCell>
                 <TableCell>{item.domain_age || "-"}</TableCell>
