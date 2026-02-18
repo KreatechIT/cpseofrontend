@@ -347,7 +347,14 @@ const ProjectCostOverview = () => {
                       {row.project_name || row.project_id || "-"}
                     </TableCell>
                     <TableCell>{row.pic || "-"}</TableCell>
-                    <TableCell>{row.created_date || "-"}</TableCell>
+                    <TableCell>
+                      {row.created_date 
+                        ? format(
+                            new Date(row.created_date),
+                            "dd/MM/yyyy"
+                          )
+                        : "-"}
+                    </TableCell>
                     <TableCell>{row.cost_type || "-"}</TableCell>
                     <TableCell>{row.description || "-"}</TableCell>
                     <TableCell className="text-right">

@@ -388,7 +388,14 @@ const TestScenario = () => {
                   return (
                     <TableRow key={row.id}>
                       <TableCell>{globalIndex}</TableCell>
-                      <TableCell>{row.created_date || "-"}</TableCell>
+                      <TableCell>
+                        {row.created_date 
+                          ? format(
+                              new Date(row.created_date ),
+                              "dd/MM/yyyy"
+                            )
+                          : "-"}
+                      </TableCell>
                       <TableCell>{row.note || "-"}</TableCell>
                       <TableCell>{row.test_scenario || "-"}</TableCell>
                       <TableCell>{row.project || "-"}</TableCell>
@@ -413,8 +420,22 @@ const TestScenario = () => {
                       >
                         {row.expected_result || "-"}
                       </TableCell>
-                      <TableCell>{row.start_date || "-"}</TableCell>
-                      <TableCell>{row.found_date || "-"}</TableCell>
+                      <TableCell>
+                        {row.start_date
+                        ? format(
+                            new Date(row.start_date),
+                            "dd/MM/yyyy"
+                          )
+                        : "-"}
+                      </TableCell>
+                      <TableCell>
+                        {row.found_date
+                        ? format(
+                            new Date(row.found_date),
+                            "dd/MM/yyyy"
+                          )
+                        : "-"}
+                      </TableCell>
                       <TableCell>{row.outcome || "-"}</TableCell>
                       <TableCell>{row.analysis || "-"}</TableCell>
 
@@ -430,7 +451,14 @@ const TestScenario = () => {
 
                       <TableCell>{row.conclusion || "-"}</TableCell>
                       <TableCell>{row.next_steps || "-"}</TableCell>
-                      <TableCell>{row.implementation_date || "-"}</TableCell>
+                      <TableCell>
+                        {row.implementation_date
+                        ? format(
+                            new Date(row.implementation_date),
+                            "dd/MM/yyyy"
+                          )
+                        : "-"}
+                      </TableCell>
                     </TableRow>
                   );
                 })

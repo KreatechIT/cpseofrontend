@@ -96,13 +96,13 @@ const PurchasedPoolTable = ({ purchased }) => {
                 </TableCell>
                 <TableCell>
                   {item.created
-                    ? format(new Date(item.created), "dd MMM yyyy")
+                    ? format(new Date(item.created), "dd/MM/yyyy")
                     : "-"}
                 </TableCell>
                 <TableCell>
                   {" "}
                   {item.order_month
-                    ? format(new Date(item.order_month), "dd MMM yyyy")
+                    ? format(new Date(item.order_month), "dd/MM/yyyy")
                     : "-"}
                 </TableCell>
                 <TableCell>{item.domain || "-"}</TableCell>

@@ -325,7 +325,7 @@ const PerformanceOverview = ({ overview }) => {
             return (   
               <>          
                 <div className="lg:col-span-10 space-y-8">
-                  <div key={projectId} className="border rounded-lg p-6 bg-card">
+                  <div key={projectId} className="border rounded-lg p-6 ">
                     <h3 className="text-lg font-semibold mb-4">{projectName} Performance</h3>
                     <ResponsiveContainer width="100%" height={400}>
                       <LineChart data={projectChartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
@@ -354,7 +354,7 @@ const PerformanceOverview = ({ overview }) => {
                     </ResponsiveContainer>
                   </div> 
                 </div>
-                <div className="lg:col-span-2 border rounded-lg p-6 flex flex-col justify-between bg-muted/50">
+                <div className="lg:col-span-2 border rounded-lg p-6 flex flex-col justify-between ">
                   <div>
                     <div className="flex justify-between items-center mb-4">
                       <h4 className="text-base font-semibold">Inquiry</h4>

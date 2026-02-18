@@ -132,10 +132,31 @@ const CompetitorDetailsTable = ({ filteredCompetitors }) => {
                     <TableCell className="text-right">
                       {comp.total_organic_keywords || "-"}
                     </TableCell>
-                    <TableCell>{safeFormat(comp.domain_created_date)}</TableCell>
-                    <TableCell>{safeFormat(comp.domain_expiration_date)}</TableCell>
+                    <TableCell>
+                      {comp.domain_created_date
+                        ? format(
+                            new Date(comp.domain_created_date),
+                            "dd/MM/yyyy"
+                          )
+                        : "-"}
+                    </TableCell>
+                    <TableCell>
+                      {comp.domain_expiration_date
+                        ? format(
+                            new Date(comp.domain_expiration_date),
+                            "MMM yyyy"
+                          )
+                        : "-"}
+                    </TableCell>
                     <TableCell>{comp.domain_age || "-"}</TableCell>
-                    <TableCell>{safeFormat(comp.date_start_ranking)}</TableCell>
+                    <TableCell>
+                      {comp.date_start_ranking
+                        ? format(
+                            new Date(comp.date_start_ranking),
+                            "dd/MM/yyyy"
+                          )
+                        : "-"}
+                    </TableCell>
 
                     {/* Uncomment if you want actions back */}
                     {/* <TableCell className="text-center">

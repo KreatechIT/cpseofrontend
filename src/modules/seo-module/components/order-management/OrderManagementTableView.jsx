@@ -105,7 +105,7 @@ const OrderManagementTableView = ({ filteredOrders }) => {
                     </TableCell>
                     <TableCell>
                       {order.created
-                        ? format(new Date(order.created), "dd MMM yyyy")
+                        ? format(new Date(order.created), "dd/MM/yyyy")
                         : "-"}
                     </TableCell>
                     <TableCell>{order.order_month || "-"}</TableCell>
@@ -132,7 +132,7 @@ const OrderManagementTableView = ({ filteredOrders }) => {
                       {order.file_received_date
                         ? format(
                             new Date(order.file_received_date),
-                            "dd MMM yyyy"
+                            "dd/MM/yyyy"
                           )
                         : "-"}
                     </TableCell>
