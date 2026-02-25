@@ -222,8 +222,8 @@ const SeRankingImportForm = () => {
         if (importType === "se-ranking") {
           payload = {
             ...payload,
-            // Map to /seo/se-ranking/ (assumed similar to purchased)
-            // Adjust based on actual fields
+            // Map to /seo/se-ranking/ - keyword ranking data
+            keyword: getValue(row, "Keyword") || getValue(row, "keyword") || "",
             backlink: getValue(row, "Backlink") || "",
             status: getValue(row, "Status") || "Found",
             indexing_google: getValue(row, "Indexing Google") || 0,

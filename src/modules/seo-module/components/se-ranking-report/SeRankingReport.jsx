@@ -40,8 +40,17 @@ const SeRankingReport = () => {
       setLoading(true);
       setError(null);
       try {
-        // SE Ranking
-        const rankingRes = await axiosInstance.get("/seo/se-ranking/");
+        // Get current month date range (1st of month to today)
+        const today = new Date();
+        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        
+        const dateFrom = format(firstDayOfMonth, "dd/MM/yyyy");
+        const dateTo = format(today, "dd/MM/yyyy");
+
+        // SE Ranking Report with date filter
+        const rankingRes = await axiosInstance.get(
+          `/seo/se-ranking-report/?date_from=${dateFrom}&date_to=${dateTo}`
+        );
         setRankingData(rankingRes.data.keywords || []);
         setPositionOverview(rankingRes.data.position_overview || {});
 

@@ -283,7 +283,7 @@ const handleImport = async () => {
         let payload = { ...basePayload };
 
         if (importType === "project") {
-          // Map only fields that exist in /seo/purchased/
+          // Map fields for /seo/purchased/ including new Ahrefs fields
           payload = {
             ...payload,
             created_date: formatDateForAPI(getValue(row, "First seen")),
@@ -300,7 +300,7 @@ const handleImport = async () => {
             target_url_2: "",
             status: "Found",
             link_status: "200",
-            follow: getValue(row, "Nofollow") === "No" ? "Yes" : "No",
+            follow: getValue(row, "Nofollow") === "TRUE" ? "No" : "Yes",
             domain_rating: getValue(row, "Domain rating") || "0",
             domain_authority: getValue(row, "Domain rating") || 0,
             page_authority: getValue(row, "UR") || 0,
@@ -312,12 +312,26 @@ const handleImport = async () => {
             backlinks_id: `PA-${Date.now()}`,
             project: selectedProject, // Selected UUID
             vendor: selectedVendor, // Selected UUID
+            // New Ahrefs fields
+            url_rating: getValue(row, "UR") || null,
+            domain_traffic: getValue(row, "Domain traffic") || null,
+            referring_domains: getValue(row, "Referring domains") || null,
+            linked_domains: getValue(row, "Linked domains") || null,
+            external_links: getValue(row, "External links") || null,
+            page_traffic: getValue(row, "Page traffic") || null,
+            total_organic_keywords: getValue(row, "Keywords") || null,
+            anchor_text: getValue(row, "Anchor") || "",
+            redirect_chain_urls: getValue(row, "Redirect Chain URLs") || "",
+            redirect_chain_status_codes: getValue(row, "Redirect Chain status codes") || "",
+            first_seen: formatDateForAPI(getValue(row, "First seen")),
+            last_seen: formatDateForAPI(getValue(row, "Last seen")),
+            lost: formatDateForAPI(getValue(row, "Lost")) || null,
           };
 
           await importProjectData(payload);
         } 
         else if (importType === "competitor") {
-          // Map only fields that exist in /seo/competitor-pool/
+          // Map fields for /seo/competitor-pool/ including new Ahrefs fields
           console.log("Importing competitor with row:", row);
           payload = {
             ...payload,
@@ -333,6 +347,20 @@ const handleImport = async () => {
             spam_score: 0,
             first_seen: formatDateForAPI(getValue(row, "First seen")),
             last_seen: formatDateForAPI(getValue(row, "Last seen")),
+            // New Ahrefs fields
+            url_rating: getValue(row, "UR") || null,
+            domain_traffic: getValue(row, "Domain traffic") || null,
+            referring_domains: getValue(row, "Referring domains") || null,
+            linked_domains: getValue(row, "Linked domains") || null,
+            external_links: getValue(row, "External links") || null,
+            page_traffic: getValue(row, "Page traffic") || null,
+            total_organic_keywords: getValue(row, "Keywords") || null,
+            target_url: getValue(row, "Target URL") || "",
+            anchor_text: getValue(row, "Anchor") || "",
+            redirect_chain_urls: getValue(row, "Redirect Chain URLs") || "",
+            redirect_chain_status_codes: getValue(row, "Redirect Chain status codes") || "",
+            follow: getValue(row, "Nofollow") === "TRUE" ? "No" : "Yes",
+            lost: formatDateForAPI(getValue(row, "Lost")) || null,
           };
 
           await importCompetitorData(payload);
