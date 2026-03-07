@@ -293,7 +293,7 @@ const Conversion = () => {
                 <Table>
                   <TableHeader className="sticky top-0 bg-background z-10">
                     <TableRow>
-                      {/* <TableHead>Date</TableHead> */}
+                      <TableHead className="text-left">Date</TableHead>
                       <TableHead className="text-left">Inquiry</TableHead>
                       <TableHead className="text-left">Download</TableHead>
                       {/* <TableHead>Note</TableHead> */}
@@ -308,7 +308,11 @@ const Conversion = () => {
                     {paginated.length > 0 ? (
                       paginated.map((row, idx) => (
                         <TableRow key={idx}>
-                          {/* <TableCell>{row.period}</TableCell> */}
+                          <TableCell className="text-left">
+                            {row.period
+                            ? format(new Date(row.period), "dd/MM/yyyy")
+                            : "-"}
+                            </TableCell>
                           <TableCell className="text-left">
                             {row.inquiry?.toLocaleString() || "-"}
                           </TableCell>

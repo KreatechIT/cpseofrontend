@@ -287,7 +287,7 @@ const PerformanceOverview = () => {
                     style={{ background: "#3872FA33" }}
                   >
                     <TableRow>
-                      {/* <TableHead>Date</TableHead> */}
+                      <TableHead>Date</TableHead>
                       <TableHead className="text-right">Impression</TableHead>
                       <TableHead className="text-right">Clicks</TableHead>
                       <TableHead className="text-right">CTR</TableHead>
@@ -326,9 +326,11 @@ const PerformanceOverview = () => {
                     {paginated.length > 0 ? (
                       paginated.map((row, index) => (
                         <TableRow key={index}>
-                          {/* <TableCell className="font-medium">
-                            {row.period}
-                          </TableCell> */}
+                          <TableCell className="font-medium">
+                             {row.period
+                            ? format(new Date(row.period), "dd/MM/yyyy")
+                            : "-"}
+                          </TableCell>
                           <TableCell className="text-right">
                             {row.impressions?.toLocaleString() || "-"}
                           </TableCell>

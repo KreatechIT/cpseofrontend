@@ -62,11 +62,11 @@ const SamplePoolTable = ({ samples }) => {
                 <TableCell>{sample.link_type || "-"}</TableCell>
                 <TableCell>{sample.price_usd_general || "-"}</TableCell>
                 <TableCell>{sample.price_usd_niche || "-"}</TableCell>
-                <TableCell>{sample.domain_rating || "-"}</TableCell>
-                <TableCell>{sample.traffic || "-"}</TableCell>
-                <TableCell>{sample.domain_authority || "-"}</TableCell>
-                <TableCell>{sample.page_authority || "-"}</TableCell>
-                <TableCell>{sample.spam_score || "-"}</TableCell>
+                <TableCell>{sample.domain_rating ? Number(sample.domain_rating).toLocaleString() : "-"}</TableCell>
+                <TableCell>{sample.traffic ? Number(sample.traffic).toLocaleString() : "-"}</TableCell>
+                <TableCell>{sample.domain_authority ? Number(sample.domain_authority).toLocaleString() : "-" }</TableCell>
+                <TableCell>{sample.page_authority ? Number(sample.page_authority).toLocaleString() : "-"}</TableCell>
+                <TableCell>{sample.spam_score ? Number(sample.spam_score).toLocaleString() : "-"}</TableCell>
                 <TableCell>
                   {sample.domain_created_date
                     ? format(new Date(sample.domain_created_date), "dd/MM/yyyy")
