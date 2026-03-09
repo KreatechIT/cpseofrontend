@@ -39,6 +39,15 @@ const InsightTable = ({ data, onOpenVendorSummary }) => {
   const start = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedData = data.slice(start, start + ITEMS_PER_PAGE);
 
+  const formatMetric = (value) => {
+    if (value == null || isNaN(value)) return "-";
+    const num = Number(value);
+    if (num >= 0 && num <= 1) {
+      return num.toFixed(2).replace(/\.?0+$/, "");
+    }
+    return Math.round(num);
+  };
+
   return (
     <div className="space-y-4">
       <ScrollArea className="rounded-md border">
@@ -96,7 +105,7 @@ const InsightTable = ({ data, onOpenVendorSummary }) => {
                     "-"
                   )}
                 </TableCell>
-                <TableCell>{row.domain_rating || "-"}</TableCell>
+                <TableCell>{formatMetric(row.domain_rating)}</TableCell>
                 <TableCell>
                   {row.url_rating || row.page_authority || "-"}
                 </TableCell>

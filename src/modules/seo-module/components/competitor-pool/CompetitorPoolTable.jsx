@@ -51,7 +51,7 @@ const CompetitorPoolTable = ({ competitors }) => {
                 </TableCell>
                 <TableCell>{comp.vendor || "-"}</TableCell>
                 <TableCell className="text-right font-medium">
-                  {comp.price_usd ? `$${comp.price_usd}` : "-"}
+                  {comp.price_usd ? `${comp.price_usd}` : "-"}
                 </TableCell>
                 <TableCell>{comp.overlap_competitors || "-"}</TableCell>
                 <TableCell>{comp.associated_vendors || "-"}</TableCell>

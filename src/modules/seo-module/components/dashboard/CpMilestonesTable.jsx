@@ -56,7 +56,7 @@ const getCellBackgroundColor = (isAchieved) => {
                   <TableCell>{m.keywords_target}</TableCell>
                   <TableCell>-</TableCell> {/* No date field */}
                   {/* <TableCell>-</TableCell> No note */}
-                  <TableCell>Achieved {m.impressions_actual} impressions</TableCell>
+                  <TableCell>Achieved {m.impressions_actual?.toLocaleString() || "0"} impressions</TableCell>
                   <TableCell>{m.due_date || "-"}</TableCell>
                   
                   <TableCell

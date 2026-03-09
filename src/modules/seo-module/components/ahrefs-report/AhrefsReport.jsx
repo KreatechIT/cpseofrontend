@@ -198,14 +198,15 @@ const AhrefsReportPage = () => {
                     {/* <TableCell>{row.vendor || "Ahrefs Import"}</TableCell> */}
                     <TableCell>{row.domain_rating || "-"}</TableCell>
                     <TableCell>{row.url_rating || "-"}</TableCell>
-                    <TableCell>{row.domain_traffic || "-"}</TableCell>
-                    <TableCell>{row.referring_domains || "-"}</TableCell>
-                    <TableCell>{row.linked_domains || "-"}</TableCell>
+                    <TableCell>{row.domain_traffic?.toLocaleString() || "-"}
+                    </TableCell>
+                    <TableCell>{row.referring_domains?.toLocaleString() || "-"}</TableCell>
+                    <TableCell>{row.linked_domains?.toLocaleString() || "-"}</TableCell>
                     <TableCell>
                       {row.lost === null ? "Active" : "Lost"}
                     </TableCell>
                     <TableCell>{row.external_links || "-"}</TableCell>
-                    <TableCell>{row.page_traffic || "-"}</TableCell>
+                    <TableCell>{row.page_traffic?.toLocaleString() || "-"}</TableCell>
                     <TableCell>{row.total_organic_keywords || "-"}</TableCell>
                     <TableCell>{row.target_url || "-"}</TableCell>
                     <TableCell>{row.anchor_text || "-"}</TableCell>

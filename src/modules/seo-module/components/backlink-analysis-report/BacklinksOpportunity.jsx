@@ -312,12 +312,20 @@ const BacklinksOpportunity = () => {
                         {row.spamScore}
                       </TableCell>
 
-                      <TableCell>{row.domainCreatedDate}</TableCell>
-                      <TableCell>{row.domainExpirationDate}</TableCell>
+                      <TableCell>{row.domainCreatedDate
+                    ? format(new Date(row.domainCreatedDate), "dd/MM/yyyy")
+                    : "-"}
+                      </TableCell>
+                      <TableCell>{row.domainExpirationDate
+                    ? format(new Date(row.domainExpirationDate), "dd/MM/yyyy")
+                    : "-"}
+                      </TableCell>
                       <TableCell>{row.domainAge}</TableCell>
                       <TableCell>{row.associatedVendors}</TableCell>
                       <TableCell>{row.lowestPriceUSD}</TableCell>
-                      <TableCell>{row.discoveredDate}</TableCell>
+                      <TableCell>
+                        {row.discoveredDate  ? format(new Date(row.discoveredDate), "dd/MM/yyyy") : "-"}
+                      </TableCell>
                       <TableCell>{row.discoveredBy}</TableCell>
                       <TableCell>{row.overlapCompetitors}</TableCell>
                       <TableCell>{row.projectConsistsLink}</TableCell>

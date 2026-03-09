@@ -193,7 +193,7 @@ const PurchasedPoolTable = ({ purchased }) => {
                 </TableCell>
                 <TableCell>
                   {item.domain_expiration_date
-                    ? format(new Date(item.domain_expiration_date), "MMM yyyy")
+                    ? format(new Date(item.domain_expiration_date), "dd/MM/yyyy")
                     : "-"}
                 </TableCell>
                 <TableCell>{item.domain_age || "-"}</TableCell>

@@ -4,6 +4,7 @@ import { fetchInsightData } from "../../services/insightService";
 import { PageHeading } from "@/components/shared/PageHeading";
 import InsightTable from "../../components/insight/InsightTable";
 import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
 import {
   Dialog,
   DialogContent,
@@ -159,7 +160,11 @@ const InsightPage = () => {
                         <TableCell>{item.vendors}</TableCell>
                         <TableCell>{item.price}</TableCell>
                         {/* <TableCell>{item.note}</TableCell> */}
-                        <TableCell>{item.discoveredDate}</TableCell>
+                        <TableCell>
+                          {item.discoveredDate
+                            ? format(new Date(item.discoveredDate), "dd/MM/yyyy")
+                            : "-"}
+                        </TableCell>
                         <TableCell>{item.discoveredBy}</TableCell>
                         <TableCell>{item.overlapCompetitors}</TableCell>
                         <TableCell>{item.projectConsistsLink}</TableCell>

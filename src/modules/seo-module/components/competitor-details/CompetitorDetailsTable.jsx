@@ -62,6 +62,14 @@ const CompetitorDetailsTable = ({ filteredCompetitors }) => {
   const toggleCard = (id) => {
     setExpandedCard(expandedCard === id ? null : id);
   };
+  const formatMetric = (value) => {
+    if (value == null || isNaN(value)) return "-";
+    const num = Number(value);
+    if (num >= 0 && num <= 1) {
+      return num.toFixed(2).replace(/\.?0+$/, "");
+    }
+    return Math.round(num);
+  };
 
   return (
     <>
@@ -109,28 +117,28 @@ const CompetitorDetailsTable = ({ filteredCompetitors }) => {
                     <TableCell>{safeJoin(comp.business_type)}</TableCell>
 
                     <TableCell className="text-right">
-                      {comp.domain_rating || "-"}
+                      {formatMetric(comp.domain_rating) || "-"}
                     </TableCell>
                     <TableCell className="text-right">
-                      {comp.url_rating || "-"}
+                      {formatMetric(comp.url_rating) || "-"}
                     </TableCell>
                     <TableCell className="text-right">
-                      {comp.domain_authority || "-"}
+                      {comp.domain_authority?.toLocaleString() || "-"}
                     </TableCell>
                     <TableCell className="text-right">
-                      {comp.page_authority || "-"}
+                      {comp.page_authority?.toLocaleString() || "-"}
                     </TableCell>
                     <TableCell className="text-right">
-                      {comp.spam_score || "-"}
+                      {comp.spam_score?.toLocaleString() || "-"}
                     </TableCell>
                     <TableCell className="text-right">
-                      {comp.total_backlinks || "-"}
+                      {comp.total_backlinks?.toLocaleString() || "-"}
                     </TableCell>
                     <TableCell className="text-right">
-                      {comp.referring_domain || "-"}
+                      {comp.referring_domain?.toLocaleString() || "-"}
                     </TableCell>
                     <TableCell className="text-right">
-                      {comp.total_organic_keywords || "-"}
+                      {comp.total_organic_keywords?.toLocaleString() || "-"}
                     </TableCell>
                     <TableCell>
                       {comp.domain_created_date
@@ -144,7 +152,7 @@ const CompetitorDetailsTable = ({ filteredCompetitors }) => {
                       {comp.domain_expiration_date
                         ? format(
                             new Date(comp.domain_expiration_date),
-                            "MMM yyyy"
+                            "dd/MM/yyyy"
                           )
                         : "-"}
                     </TableCell>
