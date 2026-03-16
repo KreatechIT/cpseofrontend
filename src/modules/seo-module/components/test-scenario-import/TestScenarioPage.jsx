@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllTestScenarios } from "../../services/testScenarioService"; // ← create this
+// import { getAllTestScenarios } from "../../services/testScenarioService"; // ← create this
 import { PageHeading } from "@/components/shared/PageHeading";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,16 +39,16 @@ import { format } from "date-fns";
 const ITEMS_PER_PAGE = 10;
 
 const TestScenarioPage = () => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const { testScenarios, loading } = useSelector((state) => state.testScenario); // ← assuming slice name
 
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
 
-  useEffect(() => {
-    dispatch(getAllTestScenarios());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(getAllTestScenarios());
+  // }, [dispatch]);
 
   // Filter logic
   const filteredData = testScenarios?.filter((item) => {
