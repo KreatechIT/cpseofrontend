@@ -284,7 +284,7 @@ if (totalUsersFilter !== null && getValue(row, "totalUsers") !== totalUsersFilte
             <PopoverTrigger asChild>
               <Button variant="outline" className="w-full justify-start text-left font-normal">
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {format(uploadedDate, "PPP")}
+                {format(uploadedDate, 'dd/MM/yyyy')}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
@@ -365,7 +365,7 @@ if (totalUsersFilter !== null && getValue(row, "totalUsers") !== totalUsersFilte
               />
             </div> */}
 
-            <div className="w-[280px]">
+            <div className="w-[250px]">
               <Label className="mb-3">Date Filter</Label>
               <Popover>
                 <PopoverTrigger asChild>
@@ -373,8 +373,8 @@ if (totalUsersFilter !== null && getValue(row, "totalUsers") !== totalUsersFilte
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {dateFilter.from
                       ? dateFilter.to
-                        ? `${format(dateFilter.from, "PPP")} - ${format(dateFilter.to, "PPP")}`
-                        : format(dateFilter.from, "PPP")
+                        ? `${format(dateFilter.from, "PP")} - ${format(dateFilter.to, "PP")}`
+                        : format(dateFilter.from, "PP")
                       : "Select range"}
                   </Button>
                 </PopoverTrigger>

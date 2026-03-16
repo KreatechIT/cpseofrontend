@@ -99,11 +99,11 @@ const CompetitorPoolFilters = ({ competitors }) => {
               <CalendarIcon className="mr-2 h-4 w-4" />
               {dateRange.from
                 ? dateRange.to
-                  ? `${format(dateRange.from, "dd MMM yyyy")} - ${format(
+                  ? `${format(dateRange.from, "PP")} - ${format(
                       dateRange.to,
-                      "dd MMM yyyy"
+                      "PP"
                     )}`
-                  : format(dateRange.from, "dd MMM yyyy")
+                  : format(dateRange.from, "PP")
                 : "Discovered Date Range"}
             </Button>
           </PopoverTrigger>

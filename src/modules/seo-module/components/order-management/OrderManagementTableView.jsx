@@ -113,19 +113,19 @@ const OrderManagementTableView = ({ filteredOrders }) => {
                     <TableCell>{order.vendor_name || "-"}</TableCell>
                     <TableCell>{order.link_type || "-"}</TableCell>
                     <TableCell className="text-right">
-                      {order.total_links || "-"}
+                      {order.total_links ? Number(order.total_links).toLocaleString() : "-"}
                     </TableCell>
                     <TableCell className="text-right">
-                      {order.price_per_link_usd || "-"}
+                      {order.price_per_link_usd ? Number(order.price_per_link_usd).toLocaleString() : "-"}
                     </TableCell>
                     <TableCell className="text-right">
-                      {order.price_per_link_myr || "-"}
+                      {order.price_per_link_myr ? Number(order.price_per_link_myr).toLocaleString() : "-"}
                     </TableCell>
                     <TableCell className="text-right font-medium">
-                      {order.total_usd || "-"}
+                      {order.total_usd ? Number(order.total_usd).toLocaleString() : "-"}
                     </TableCell>
                     <TableCell className="text-right font-medium">
-                      {order.total_myr || "-"}
+                      {order.total_myr ? Number(order.total_myr).toLocaleString() : "-"}
                     </TableCell>
                     <TableCell>{order.dripfeed_day || "-"}</TableCell>
                     <TableCell>

@@ -19,7 +19,7 @@ const VacancyDetailedView = () => {
             <div>
               <p className="text-xs mb-1">Date</p>
               <p className="text-foreground font-medium">
-                {format(new Date(vacancy.date), "PPP")}
+                {format(new Date(vacancy.date), 'dd/MM/yyyy')}
               </p>
             </div>
             <div>

@@ -273,11 +273,11 @@ const TestScenario = () => {
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {implDateRange.from
                   ? implDateRange.to
-                    ? `${format(implDateRange.from, "PPP")} - ${format(
+                    ? `${format(implDateRange.from, 'dd/MM/yyyy')} - ${format(
                         implDateRange.to,
-                        "PPP"
+                        'dd/MM/yyyy'
                       )}`
-                    : format(implDateRange.from, "PPP")
+                    : format(implDateRange.from, 'dd/MM/yyyy')
                   : "Select range"}
               </Button>
             </PopoverTrigger>
@@ -303,11 +303,11 @@ const TestScenario = () => {
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {startDateRange.from
                   ? startDateRange.to
-                    ? `${format(startDateRange.from, "PPP")} - ${format(
+                    ? `${format(startDateRange.from, 'dd/MM/yyyy')} - ${format(
                         startDateRange.to,
-                        "PPP"
+                        'dd/MM/yyyy'
                       )}`
-                    : format(startDateRange.from, "PPP")
+                    : format(startDateRange.from, 'dd/MM/yyyy')
                   : "Select range"}
               </Button>
             </PopoverTrigger>
@@ -333,11 +333,11 @@ const TestScenario = () => {
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {foundDateRange.from
                   ? foundDateRange.to
-                    ? `${format(foundDateRange.from, "PPP")} - ${format(
+                    ? `${format(foundDateRange.from, "PP")} - ${format(
                         foundDateRange.to,
-                        "PPP"
+                        "PP"
                       )}`
-                    : format(foundDateRange.from, "PPP")
+                    : format(foundDateRange.from, "PP")
                   : "Select range"}
               </Button>
             </PopoverTrigger>
@@ -361,7 +361,7 @@ const TestScenario = () => {
               <TableRow>
                 <TableHead>No</TableHead>
                 <TableHead>Created Date</TableHead>
-                <TableHead>Note</TableHead>
+                {/* <TableHead>Note</TableHead> */}
                 <TableHead>Test Scenario</TableHead>
                 <TableHead>Project</TableHead>
                 <TableHead>Sub Project</TableHead>
@@ -396,9 +396,9 @@ const TestScenario = () => {
                             )
                           : "-"}
                       </TableCell>
-                      <TableCell>{row.note || "-"}</TableCell>
+                      {/* <TableCell>{row.note || "-"}</TableCell> */}
                       <TableCell>{row.test_scenario || "-"}</TableCell>
-                      <TableCell>{row.project || "-"}</TableCell>
+                      <TableCell>{row.project_name || "-"}</TableCell>
                       <TableCell>{row.sub_project || "-"}</TableCell>
                       <TableCell>{row.unique_domain || "-"}</TableCell>
                       <TableCell className="max-w-[200px] truncate">

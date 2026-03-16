@@ -207,7 +207,9 @@ const SeRankingReport = () => {
                         {row.keyword || "-"}
                       </TableCell>
                       <TableCell>{row.highest_ranking || "-"}</TableCell>
-                      <TableCell>{row.achieved_date || "-"}</TableCell>
+                      <TableCell>  {row.achieved_date
+    ? new Date(row.achieved_date).toLocaleDateString("en-GB")
+    : "-"}</TableCell>
                       <TableCell>{row.note || "-"}</TableCell>
                       {dateColumns.map((date) => (
                         <TableCell key={date} className="text-center">

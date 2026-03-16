@@ -8,7 +8,7 @@ import TaskChecklistDetails from "../../components/onboarding-task-checklist/Tas
 const TaskChecklistPage = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  const { checklist } = useSelector((state) => state.taskChecklist);
+  const { checklist } = useSelector((state) => state.taskChecklist || {});
 
   useEffect(() => {
     if (!checklist)

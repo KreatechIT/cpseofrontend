@@ -20,6 +20,7 @@ import ProjectFormPage from "@/modules/seo-module/pages/project-configuration/Pr
 import AnalyticsImportPage from "@/modules/seo-module/pages/analytics-import/AnalyticsImportPage";
 import SearchConsoleImportPage from "@/modules/seo-module/pages/search-console-import/SearchConsoleImportPage";
 import ConversionImportPage from "@/modules/seo-module/pages/conversion-import/ConversionImportPage";
+import TestScenarioImportPage from "@/modules/seo-module/pages/test-scenario-import/TestScenarioImportPage";
 import SeRankingImportPage from "@/modules/seo-module/pages/se-ranking-import/SeRankingImportPage";
 import InsightPage from "@/modules/seo-module/pages/insight/InsightPage";
 import BacklinkAnalysisReportPage from "@/modules/seo-module/pages/backlink-analysis-report/BacklinkAnalysisReportPage";
@@ -280,6 +281,14 @@ const seoRoutes = {
           element: (
             <PermissionRoute userType="member">
               <SeRankingImportPage />
+            </PermissionRoute>
+          ),
+        },
+        {
+          path: "test-scenarios-import",
+          element: (
+            <PermissionRoute userType="member">
+              <TestScenarioImportPage />
             </PermissionRoute>
           ),
         },

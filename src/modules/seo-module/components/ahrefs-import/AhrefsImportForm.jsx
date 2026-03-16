@@ -452,7 +452,7 @@ const handleImport = async () => {
                 className="w-full justify-start text-left font-normal"
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {uploadedDate ? format(uploadedDate, "PPP") : "Select date"}
+                {uploadedDate ? format(uploadedDate, 'dd/MM/yyyy') : "Select date"}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
@@ -600,7 +600,7 @@ const handleImport = async () => {
               <Input value={fileName} disabled />
             </div>
 
-            <div className="w-[280px]">
+            <div className="w-[250px]">
               <Label className="mb-3">Calendar Filter</Label>
               <Popover>
                 <PopoverTrigger asChild>
@@ -611,11 +611,11 @@ const handleImport = async () => {
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {dateFilter.from
                       ? dateFilter.to
-                        ? `${format(dateFilter.from, "PPP")} - ${format(
+                        ? `${format(dateFilter.from, "PP")} - ${format(
                             dateFilter.to,
-                            "PPP"
+                            "PP"
                           )}`
-                        : format(dateFilter.from, "PPP")
+                        : format(dateFilter.from, "PP")
                       : "Select date range"}
                   </Button>
                 </PopoverTrigger>

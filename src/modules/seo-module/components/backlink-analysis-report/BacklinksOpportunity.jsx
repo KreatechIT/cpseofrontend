@@ -185,8 +185,8 @@ const BacklinksOpportunity = () => {
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {dateFilter.from
                   ? dateFilter.to
-                    ? `${format(dateFilter.from, "PPP")} - ${format(dateFilter.to, "PPP")}`
-                    : format(dateFilter.from, "PPP")
+                    ? `${format(dateFilter.from, "PP")} - ${format(dateFilter.to, "PP")}`
+                    : format(dateFilter.from, "PP")
                   : "Select date range"}
               </Button>
             </PopoverTrigger>

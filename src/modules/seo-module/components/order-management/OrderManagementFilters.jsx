@@ -30,7 +30,7 @@ const OrderManagementFilters = ({ orders }) => {
 
   // Unique options
   const vendorOptions = useMemo(
-    () => [...new Set(orders.map((o) => o.vendor).filter(Boolean))],
+    () => [...new Set(orders.map((o) => o.vendor ).filter(Boolean))],
     [orders]
   );
   const projectOptions = useMemo(
@@ -107,7 +107,7 @@ const OrderManagementFilters = ({ orders }) => {
               <SelectItem value={null}>All Vendors</SelectItem>
               {vendorOptions.map((v) => (
                 <SelectItem key={v} value={v}>
-                  {v}
+                  {orders.find((o) => o.vendor === v)?.vendor_name || "Unknown Vendor"}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -147,7 +147,7 @@ const OrderManagementFilters = ({ orders }) => {
               <SelectItem value={null}>All Projects</SelectItem>
               {projectOptions.map((p) => (
                 <SelectItem key={p} value={p}>
-                  {p}
+                  {orders.find((o) => o.project === p)?.project_name || "Unknown Project"}
                 </SelectItem>
               ))}
             </SelectContent>

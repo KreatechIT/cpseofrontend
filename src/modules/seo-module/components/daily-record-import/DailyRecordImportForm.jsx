@@ -322,7 +322,7 @@ const DailyRecordImportForm = () => {
                 className="w-full justify-start text-left font-normal"
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {format(uploadedDate, "PPP")}
+                {format(uploadedDate, 'dd/MM/yyyy')}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
@@ -433,11 +433,11 @@ const DailyRecordImportForm = () => {
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {dateFilter.from
                       ? dateFilter.to
-                        ? `${format(dateFilter.from, "PPP")} - ${format(
+                        ? `${format(dateFilter.from, "PP")} - ${format(
                             dateFilter.to,
-                            "PPP"
+                            "PP"
                           )}`
-                        : format(dateFilter.from, "PPP")
+                        : format(dateFilter.from, "PP")
                       : "Select date range"}
                   </Button>
                 </PopoverTrigger>

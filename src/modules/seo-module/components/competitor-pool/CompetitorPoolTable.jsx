@@ -36,14 +36,12 @@ const CompetitorPoolTable = ({ competitors }) => {
                 <TableCell>
                   {comp.live_link ? (
                     <a
-                      href={`https://${comp.unique_domain}${
-                        comp.live_link.startsWith("/") ? "" : "/"
-                      }${comp.live_link}`}
+                      href={`${comp.live_link}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-600 hover:underline"
                     >
-                      View Live Link
+                      {comp.live_link}
                     </a>
                   ) : (
                     "-"

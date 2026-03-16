@@ -107,7 +107,7 @@ const LinkSimilarity = () => {
             value={selectedVendor ?? "all"}
             onValueChange={(v) => setSelectedVendor(v === "all" ? null : v)}
           >
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="All Vendors" />
             </SelectTrigger>
             <SelectContent>

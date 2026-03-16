@@ -215,7 +215,7 @@ const ProjectCostOverview = () => {
         </div>
 
         <div className="flex flex-wrap gap-4">
-          <div className="w-[360px]">
+          <div className="w-[250px]">
             <Label className="mb-3">Date Range</Label>
             <Popover>
               <PopoverTrigger asChild>
@@ -226,11 +226,11 @@ const ProjectCostOverview = () => {
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {dateRange.from
                     ? dateRange.to
-                      ? `${format(dateRange.from, "PPP")} - ${format(
+                      ? `${format(dateRange.from, "PP")} - ${format(
                           dateRange.to,
-                          "PPP"
+                          "PP"
                         )}`
-                      : format(dateRange.from, "PPP")
+                      : format(dateRange.from, "PP")
                     : "Select range"}
                 </Button>
               </PopoverTrigger>

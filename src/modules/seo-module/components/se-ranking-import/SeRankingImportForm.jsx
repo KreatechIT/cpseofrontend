@@ -323,7 +323,7 @@ const SeRankingImportForm = () => {
             <PopoverTrigger asChild>
               <Button variant="outline" className="w-full justify-start text-left font-normal">
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {format(uploadedDate, "PPP")}
+                {format(uploadedDate, 'dd/MM/yyyy')}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">

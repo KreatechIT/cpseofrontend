@@ -1,6 +1,5 @@
 import attendanceTrackingReducer from "./attendanceTrackingSlice";
 import candidatesReducer from "./candidatesSlice";
-import employeeDatabaseReducer from "./employeeDatabaseSlice";
 import hiringVacancyReducer from "./hiringVacancySlice";
 import jobsReducer from "./jobsSlice";
 import leaveManagementReducer from "./leaveManagementSlice";
@@ -10,7 +9,6 @@ import referralsReducer from "./personalityTestSlice";
 
 const hrReducers = {
   onboardingTaskChecklist: onboardingTaskChecklistReducer,
-  employeeDatabase: employeeDatabaseReducer,
   attendanceTracking: attendanceTrackingReducer,
   leaveManagement: leaveManagementReducer,
 

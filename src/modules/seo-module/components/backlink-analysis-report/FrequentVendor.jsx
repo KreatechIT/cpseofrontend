@@ -148,15 +148,15 @@ const FrequentVendor = () => {
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {dateFilter.from
                   ? dateFilter.to
-                    ? `${format(dateFilter.from, "PPP")} - ${format(
+                    ? `${format(dateFilter.from, 'dd/MM/yyyy')} - ${format(
                         dateFilter.to,
-                        "PPP"
+                        'dd/MM/yyyy'
                       )}`
-                    : format(dateFilter.from, "PPP")
+                    : format(dateFilter.from, 'dd/MM/yyyy')
                   : dateRange.min_date && dateRange.max_date
-                  ? `${format(new Date(dateRange.min_date), "PPP")} - ${format(
+                  ? `${format(new Date(dateRange.min_date), 'dd/MM/yyyy')} - ${format(
                       new Date(dateRange.max_date),
-                      "PPP"
+                      'dd/MM/yyyy'
                     )}`
                   : "Select date range"}
               </Button>

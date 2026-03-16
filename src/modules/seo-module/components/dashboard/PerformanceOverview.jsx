@@ -202,15 +202,15 @@ const PerformanceOverview = ({ overview }) => {
 
         {/* Date Range & Project Select */}
         <div className="flex gap-4 items-center">
-          <div className="w-[360px]">
+          <div className="w-[250px]">
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline" className="w-full justify-start text-left font-normal">
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {dateRange.from
                     ? dateRange.to
-                      ? `${format(dateRange.from, "PPP")} - ${format(dateRange.to, "PPP")}`
-                      : format(dateRange.from, "PPP")
+                      ? `${format(dateRange.from, 'dd/MM/yyyy')} - ${format(dateRange.to, 'dd/MM/yyyy')}`
+                      : format(dateRange.from, 'dd/MM/yyyy')
                     : "Select range"}
                 </Button>
               </PopoverTrigger>

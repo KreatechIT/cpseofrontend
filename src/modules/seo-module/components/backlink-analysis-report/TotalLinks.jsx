@@ -121,15 +121,15 @@ const TotalLinks = () => {
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {dateFilter.from
                   ? dateFilter.to
-                    ? `${format(dateFilter.from, "PPP")} - ${format(
+                    ? `${format(dateFilter.from, "PP")} - ${format(
                         dateFilter.to,
-                        "PPP"
+                        "PP"
                       )}`
-                    : format(dateFilter.from, "PPP")
+                    : format(dateFilter.from, "PP")
                   : dateRange.min_date && dateRange.max_date
-                  ? `${format(new Date(dateRange.min_date), "PPP")} - ${format(
+                  ? `${format(new Date(dateRange.min_date), "PP")} - ${format(
                       new Date(dateRange.max_date),
-                      "PPP"
+                      "PP"
                     )}`
                   : "Select date range"}
               </Button>

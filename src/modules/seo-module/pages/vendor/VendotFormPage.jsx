@@ -322,8 +322,8 @@ const handleSubmit = async (e) => {
           </div>
 
           {/* SECTION 3: Metrics & Unique Domains */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Left: General Metrics */}
+          <div className="">
+            {/* General Metrics */}
             <div className="space-y-6">
               <div>
                 <Label className="mb-3">Average Domain Rating</Label>
@@ -338,8 +338,8 @@ const handleSubmit = async (e) => {
                 <Input name="total_general_links" type="number" value={formData.total_general_links} onChange={handleChange} />
               </div>
             </div>
-
-            {/* Right: Total Unique Domain */}
+          </div>
+          {/* Total Unique Domain */}
             <div className="border rounded-lg p-6">
               <h3 className="font-semibold mb-4">Total Unique Domain</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -353,8 +353,6 @@ const handleSubmit = async (e) => {
                 </div>
               </div>
             </div>
-          </div>
-
           {/* SECTION 4: Total Niche Link */}
           <div className="border rounded-lg p-6">
             <h3 className="font-semibold mb-4">Total Niche Link</h3>
