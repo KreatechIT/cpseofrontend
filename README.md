@@ -144,5 +144,4 @@ formatDate.js
 - Use **kebab-case**.
 - Example:
 
-```text
 
