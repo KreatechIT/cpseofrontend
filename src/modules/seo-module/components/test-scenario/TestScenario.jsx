@@ -411,7 +411,7 @@ const TestScenario = () => {
                           {row.page_url || "-"}
                         </a>
                       </TableCell>
-                      <TableCell>{row.hypothesis || "-"}</TableCell>
+                      <TableCell className="whitespace-normal break-words">{row.hypothesis || "-"}</TableCell>
                       <TableCell
                         className={`${resultColor} hover:${resultColor.replace(
                           "50",
@@ -437,7 +437,7 @@ const TestScenario = () => {
                         : "-"}
                       </TableCell>
                       <TableCell>{row.outcome || "-"}</TableCell>
-                      <TableCell>{row.analysis || "-"}</TableCell>
+                      <TableCell className="whitespace-normal break-words">{row.analysis || "-"}</TableCell>
 
                       {/* Only Result column gets stronger background + bold text */}
                       <TableCell
@@ -449,7 +449,7 @@ const TestScenario = () => {
                         {row.result || "-"}
                       </TableCell>
 
-                      <TableCell>{row.conclusion || "-"}</TableCell>
+                      <TableCell className="whitespace-normal break-words">{row.conclusion || "-"}</TableCell>
                       <TableCell>{row.next_steps || "-"}</TableCell>
                       <TableCell>
                         {row.implementation_date

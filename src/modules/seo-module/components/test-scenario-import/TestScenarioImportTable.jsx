@@ -18,7 +18,7 @@ const TestScenarioImportTable = ({ data, columns }) => {
       <Table>
         <TableHeader className="sticky top-0 bg-white z-10">
           <TableRow>
-            <TableHead className="w-[50px]">No</TableHead>
+            {/* <TableHead className="w-[50px]">No</TableHead> */}
             {columns.map((col, index) => (
               <TableHead key={index}>{col}</TableHead>
             ))}
@@ -27,9 +27,11 @@ const TestScenarioImportTable = ({ data, columns }) => {
         <TableBody>
           {data.map((row, index) => (
             <TableRow key={index}>
-              <TableCell className="font-medium">{index + 1}</TableCell>
+              {/* <TableCell className="font-medium">{index + 1}</TableCell> */}
               {columns.map((col, colIndex) => (
-                <TableCell key={colIndex}>{row[col] || "-"}</TableCell>
+                <TableCell key={colIndex} className="max-w-[200px] whitespace-normal break-words">
+                  {row[col] || "-"}
+                </TableCell>
               ))}
             </TableRow>
           ))}

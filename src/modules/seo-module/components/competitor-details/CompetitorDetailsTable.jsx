@@ -36,7 +36,7 @@ const CompetitorDetailsTable = ({ filteredCompetitors }) => {
   const [selectedCompetitor, setSelectedCompetitor] = useState(null);
 
   const handleEdit = (comp) => {
-    navigate(`/seo/competitor-details/edit/${comp.id}`);
+    navigate(`/seo/competitor/competitor-details/edit/${comp.id}`);
   };
 
   const handleDeleteClick = (comp) => {
@@ -96,7 +96,7 @@ const CompetitorDetailsTable = ({ filteredCompetitors }) => {
                 <TableHead>Domain Expiration Date</TableHead>
                 <TableHead>Domain Age</TableHead>
                 <TableHead>Date Start Ranking</TableHead>
-                {/* <TableHead className="w-[120px]">Actions</TableHead> */}
+                <TableHead className="w-[120px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -167,7 +167,7 @@ const CompetitorDetailsTable = ({ filteredCompetitors }) => {
                     </TableCell>
 
                     {/* Uncomment if you want actions back */}
-                    {/* <TableCell className="text-center">
+                    <TableCell className="text-center">
                       <div className="flex justify-center gap-2">
                         <Button
                           variant="outline"
@@ -184,7 +184,7 @@ const CompetitorDetailsTable = ({ filteredCompetitors }) => {
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
-                    </TableCell> */}
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (

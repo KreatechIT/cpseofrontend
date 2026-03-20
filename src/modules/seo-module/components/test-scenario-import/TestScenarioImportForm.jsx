@@ -12,17 +12,17 @@ import {
 } from "@/components/ui/select";
 import { format } from "date-fns";
 import ExcelUploadField from "@/components/form-fields/ExcelUploadField";
-import TestScenarioImportTable from "./TestScenarioPage";
+import TestScenarioImportTable from "./TestScenarioImportTable";
 import { storeImportedData, setImportLoading, clearImportedData } from "../../store/testScenarioImportSlice"; // ← create this slice
 import { importTestScenarioData } from "../../services/testScenarioImportService"; // ← create this service
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import axiosInstance from "@/services/axiosInstance";
 
+
 const TestScenarioImportForm = () => {
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
-  const { importedData = [], importLoading = false } = useSelector(
+  const { importedData = [] } = useSelector(
   (state) => state.testScenarioImport || {}
 );
 
@@ -192,7 +192,7 @@ const TestScenarioImportForm = () => {
           found_date: formatDateForAPI(getValue(row, "Found Date")),
           outcome: getValue(row, "Outcome") || "",
           analysis: getValue(row, "Analysis") || "",
-          result: getValue(row, "Result") || "Positive", // default to Positive if missing
+          result: getValue(row, "Result") || "Positive",
           conclusion: getValue(row, "Conclusion") || "",
           next_steps: getValue(row, "Next Steps") || "",
           implementation_date: formatDateForAPI(getValue(row, "Implementation Date")),

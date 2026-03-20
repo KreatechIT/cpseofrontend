@@ -20,6 +20,7 @@ import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import ExcelUploadField from "@/components/form-fields/ExcelUploadField";
 import OrderImportTable from "./OrderImportTable";
+import ExportDataModal from "./ExportDataModal";
 import {
   storeImportedData,
   setImportLoading,
@@ -48,10 +49,13 @@ const OrderImportForm = () => {
   const [fileName, setFileName] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [dateFilter, setDateFilter] = useState({ from: null, to: null });
-  const [vendorFilter, setVendorFilter] = useState("");
   const [columns, setColumns] = useState([]);
   const [loading, setLoading] = useState(false);
   const [lastProcessedFile, setLastProcessedFile] = useState("");
+  
+  // Modal state for export data
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [importedOrders, setImportedOrders] = useState([]);
 
   // Fetch users, projects, vendors
   useEffect(() => {
@@ -206,9 +210,6 @@ const OrderImportForm = () => {
       if (dateFilter.to && rowDate > dateFilter.to) return false;
     }
 
-    // Vendor filter
-    if (vendorFilter && getValue(row, "Vendor") !== vendorFilter) return false;
-
     return true;
   }) || [];
 
@@ -221,54 +222,60 @@ const OrderImportForm = () => {
     }
 
     setLoading(true);
-    let successCount = 0;
-    let errorCount = 0;
-
-    const basePayload = {
-      file_title: fileTitle || "Order Import",
-      uploaded_date: format(uploadedDate, "yyyy-MM-dd"),
-      time,
-      username,
-    };
-
-    const importPromises = importedData.map(async (row) => {
-      try {
-        const payload = {
-          ...basePayload,
-          link_type: getValue(row, "Link Type") || "Guest Post",
-          total_links: parseInt(getValue(row, "Link Amount") || 0),
-          price_per_link_usd: "0.00",
-          price_per_link_myr: "0.00",
-          total_usd: "0.00",
-          total_myr: "0.00",
-          dripfeed_day: 0,
-          file_received_date: format(new Date(), "yyyy-MM-dd"),
-          created_date: getValue(row, "Created Date")
-            ? format(new Date(getValue(row, "Created Date")), "yyyy-MM-dd")
-            : format(new Date(), "yyyy-MM-dd"),
-          order_month: getValue(row, "Order Month") || format(new Date(), "MMM yyyy").toUpperCase(),
-          project: selectedProject,
-          vendor: selectedVendor,
-        };
-
-        await importOrderData(payload);
-        successCount++;
-      } catch (error) {
-        errorCount++;
-      }
-    });
 
     try {
-      await Promise.all(importPromises);
-      toast.success(
-        `Import complete! ${successCount} orders imported successfully.` +
-          (errorCount > 0 ? ` ${errorCount} failed.` : "")
-      );
+      // Prepare all orders for bulk import
+      const orders = importedData.map((row) => ({
+        created_date: getValue(row, "Created Date")
+          ? format(new Date(getValue(row, "Created Date")), "dd/MM/yyyy")
+          : format(new Date(), "dd/MM/yyyy"),
+        domain: getValue(row, "Unique Domain") || "",
+        vendor: vendors.find(v => v.id === selectedVendor)?.vendor_name || "",
+        link_type: getValue(row, "Link Type") || "Guest Post",
+        keyword_1: getValue(row, "Keyword (1)") || "",
+        target_url_1: getValue(row, "Target URL (1)") || "",
+        keyword_2: getValue(row, "Keyword (2)") || "",
+        target_url_2: getValue(row, "Target URL (2)") || "",
+        link_amount: parseInt(getValue(row, "Link Amount") || 0),
+      }));
+
+      // Find the selected project
+      const selectedProjectObj = projects.find(p => p.id === selectedProject);
+      
+      if (!selectedProjectObj || !selectedProjectObj.project_name) {
+        toast.error("Invalid project selected");
+        setLoading(false);
+        return;
+      }
+
+      // Prepare bulk import payload matching API spec
+      const payload = {
+        project_id: selectedProjectObj.project_name, // Use project_name like "PA", "PA.1"
+        publish_date_from: format(uploadedDate, "dd/MM/yyyy"),
+        publish_date_to: format(new Date(uploadedDate.getTime() + 30 * 24 * 60 * 60 * 1000), "dd/MM/yyyy"), // 30 days later
+        orders: orders,
+      };
+
+      console.log("Sending payload:", payload);
+
+      // Call bulk import API
+      const response = await importOrderData(payload);
+
+      // Log the response to see what we get back
+      console.log("Import response:", response);
+
+      toast.success(response.message || `Successfully imported ${response.total_orders} orders and generated ${response.total_links_generated} links!`);
+      
+      // Show modal with export_data from response
+      setImportedOrders(response.export_data || []);
+      setShowExportModal(true);
+
+      // Clear form
       dispatch(clearImportedData());
       setFileName("");
       setFileTitle("");
-    } catch (err) {
-      toast.error("Import interrupted");
+    } catch (error) {
+      console.error("Import error:", error);
     } finally {
       setLoading(false);
     }
@@ -404,28 +411,19 @@ const OrderImportForm = () => {
                 </PopoverContent>
               </Popover>
             </div>
-
-            <div className="w-[200px]">
-              <Label className="mb-3">Vendor Filter</Label>
-                <Select value={selectedVendor ?? ""} onValueChange={(v) => setSelectedVendor(v || null)}>
-                    <SelectTrigger>
-                        <SelectValue placeholder="Select vendor" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {vendors.map((v) => (
-                        <SelectItem key={v.id} value={v.id}>
-                            {v.vendor_name || v.id}
-                        </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </div>
           </div>
 
-        </div>
-      )}
           {/* Table */}
           <OrderImportTable data={filteredData} columns={columns} />
+        </div>
+      )}
+
+      {/* Export Data Modal */}
+      <ExportDataModal
+        open={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        orders={importedOrders}
+      />
     </div>
   );
 };
