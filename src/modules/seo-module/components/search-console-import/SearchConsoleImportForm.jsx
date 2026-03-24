@@ -178,6 +178,19 @@ const [importType, setImportType] = useState("performance"); // default
 
     if (typeof dateInput === "string") {
       const cleanStr = dateInput.trim().split(" ")[0];
+      
+      // Try DD/MM/YYYY format first
+      const ddmmyyyyParts = cleanStr.split("/");
+      if (ddmmyyyyParts.length === 3) {
+        let [day, month, year] = ddmmyyyyParts.map(Number);
+        year = year < 100 ? 2000 + year : year;
+        date = new Date(year, month - 1, day);
+        if (!isNaN(date.getTime())) {
+          return format(date, "yyyy-MM-dd");
+        }
+      }
+      
+      // Try yyyy-MM-dd format (ISO)
       const parts = cleanStr.split("-");
       if (parts.length === 3) {
         const [year, month, day] = parts.map(Number);

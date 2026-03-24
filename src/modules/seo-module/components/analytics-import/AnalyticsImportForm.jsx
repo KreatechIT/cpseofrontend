@@ -153,6 +153,7 @@ const [totalUsersFilter, setTotalUsersFilter] = useState(null); // ← null, not
     reader.readAsArrayBuffer(file);
   };
 
+  // Import centralized date utility
   const formatDateForAPI = (dateInput) => {
     if (!dateInput) return null;
 
@@ -162,7 +163,7 @@ const [totalUsersFilter, setTotalUsersFilter] = useState(null); // ← null, not
       const cleanStr = dateInput.trim().split(" ")[0];
       const parts = cleanStr.split("/");
       if (parts.length === 3) {
-        let [month, day, year] = parts.map(Number);
+        let [day, month, year] = parts.map(Number); // Fixed: DD/MM/YYYY format
         year = year < 100 ? 2000 + year : year;
         month = month || 1;
         day = day || 1;

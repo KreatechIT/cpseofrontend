@@ -15,7 +15,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Edit, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -36,13 +36,26 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"; // your central pagination
-import { fetchTestScenarios } from "../../services/testScenarioService";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import EditTestScenarioForm from "./EditTestScenarioForm";
+import { fetchTestScenarios, deleteTestScenario } from "../../services/testScenarioService";
 import {
   setTestScenarios,
   setLoading,
   setError,
 } from "../../store/testScenarioSlice";
 import { cn } from "@/utils/cn";
+import { toast } from "sonner";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -54,9 +67,9 @@ const TestScenario = () => {
 
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedProject, setSelectedProject] = useState("");
-  const [selectedSubProject, setSelectedSubProject] = useState("");
-  const [selectedDomain, setSelectedDomain] = useState("");
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [selectedSubProject, setSelectedSubProject] = useState(null);
+  const [selectedDomain, setSelectedDomain] = useState(null);
   const [implDateRange, setImplDateRange] = useState({ from: null, to: null });
   const [startDateRange, setStartDateRange] = useState({
     from: null,
@@ -69,6 +82,14 @@ const TestScenario = () => {
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Delete confirmation dialog
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [scenarioToDelete, setScenarioToDelete] = useState(null);
+
+  // Edit dialog
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [scenarioToEdit, setScenarioToEdit] = useState(null);
 
   // Load data only if not already loaded or stale (e.g., > 5 min old)
   useEffect(() => {
@@ -120,11 +141,16 @@ const TestScenario = () => {
       ? row.unique_domain === selectedDomain
       : true;
 
-    const implDate = row.implementation_date
-      ? new Date(row.implementation_date)
-      : null;
-    const startDate = row.start_date ? new Date(row.start_date) : null;
-    const foundDate = row.found_date ? new Date(row.found_date) : null;
+    // Safe date parsing and comparison
+    const parseDate = (dateStr) => {
+      if (!dateStr) return null;
+      const date = new Date(dateStr);
+      return isNaN(date.getTime()) ? null : date;
+    };
+
+    const implDate = parseDate(row.implementation_date);
+    const startDate = parseDate(row.start_date);
+    const foundDate = parseDate(row.found_date);
 
     const matchesImplDate =
       (!implDateRange.from || (implDate && implDate >= implDateRange.from)) &&
@@ -192,6 +218,42 @@ const TestScenario = () => {
         return "bg-yellow-100 text-yellow-800 font-bold";
       default:
         return "font-semibold";
+    }
+  };
+
+  const handleEdit = (scenario) => {
+    setScenarioToEdit(scenario);
+    setEditDialogOpen(true);
+  };
+
+  const handleDeleteClick = (scenario) => {
+    setScenarioToDelete(scenario);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!scenarioToDelete) return;
+
+    try {
+      await deleteTestScenario(scenarioToDelete.id);
+      // Refresh the list
+      const res = await fetchTestScenarios();
+      dispatch(setTestScenarios(res));
+      setDeleteDialogOpen(false);
+      setScenarioToDelete(null);
+    } catch (error) {
+      console.error("Delete failed:", error);
+    }
+  };
+
+  const handleEditSuccess = async () => {
+    // Refresh the list after successful edit
+    try {
+      const res = await fetchTestScenarios();
+      dispatch(setTestScenarios(res));
+    } catch (error) {
+      console.error("Refresh failed:", error);
+      toast.error("Failed to refresh list. Please reload the page.");
     }
   };
 
@@ -377,6 +439,7 @@ const TestScenario = () => {
                 <TableHead>Conclusion</TableHead>
                 <TableHead>Next Steps</TableHead>
                 <TableHead>Implementation Date</TableHead>
+                <TableHead className="text-center">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -459,6 +522,25 @@ const TestScenario = () => {
                           )
                         : "-"}
                       </TableCell>
+                      <TableCell>
+                        <div className="flex items-center justify-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEdit(row)}
+                          >
+                            <Edit className="h-4 w-4 mr-1" />
+                            Edit
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleDeleteClick(row)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
                     </TableRow>
                   );
                 })
@@ -515,6 +597,50 @@ const TestScenario = () => {
           </Pagination>
         )}
       </div>
+
+      {/* Edit Dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="sm:max-w-[700px]">
+          {scenarioToEdit && (
+            <EditTestScenarioForm
+              scenario={scenarioToEdit}
+              onClose={() => {
+                setEditDialogOpen(false);
+                setScenarioToEdit(null);
+              }}
+              onSuccess={handleEditSuccess}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Test Scenario</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this test scenario? This action cannot be undone.
+              {scenarioToDelete && (
+                <div className="mt-2 p-2 bg-muted rounded">
+                  <p className="font-medium">{scenarioToDelete.test_scenario}</p>
+                </div>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setScenarioToDelete(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

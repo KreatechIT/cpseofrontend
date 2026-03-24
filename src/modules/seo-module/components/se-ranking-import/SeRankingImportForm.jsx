@@ -249,10 +249,14 @@ const SeRankingImportForm = () => {
           };
           await importSeRankingData(payload);
         } else if (importType === "se-status") {
+          // Generate order_month from Date of publication or use current date
+          const publicationDate = getValue(row, "Date of publication");
+          const orderMonthDate = publicationDate ? new Date(formatDateForAPI(publicationDate)) : new Date();
+          
           payload = {
             ...payload,
-            created_date: formatDateForAPI(getValue(row, "Date of publication")) || format(new Date(), "yyyy-MM-dd"),
-            order_month: format(new Date(), "MMM yyyy").toUpperCase(),
+            created_date: formatDateForAPI(publicationDate) || format(new Date(), "yyyy-MM-dd"),
+            order_month: format(orderMonthDate, "MMM yyyy").toUpperCase(),
             domain: new URL(getValue(row, "Backlink")).hostname || "",
             link_type: "Guest Post",
             price_usd: getValue(row, "Price").replace(/ USD$/, "") || "0.00",

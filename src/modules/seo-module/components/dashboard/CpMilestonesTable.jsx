@@ -18,6 +18,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { CardHeader, CardTitle } from "@/components/ui/card";
+import { safeFormatDate } from "../../lib/dateUtils";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -57,7 +58,7 @@ const getCellBackgroundColor = (isAchieved) => {
                   <TableCell>-</TableCell> {/* No date field */}
                   {/* <TableCell>-</TableCell> No note */}
                   <TableCell>Achieved {m.impressions_actual?.toLocaleString() || "0"} impressions</TableCell>
-                  <TableCell>{m.due_date || "-"}</TableCell>
+                  <TableCell>{safeFormatDate(m.due_date)}</TableCell>
                   
                   <TableCell
                     // className={isAchieved ? "bg-green-50 hover:bg-green-100" : "bg-red-50 hover:bg-red-100"}

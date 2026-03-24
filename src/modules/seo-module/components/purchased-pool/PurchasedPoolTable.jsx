@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { format } from "date-fns";
+import { formatDateShort } from "../../lib/dateUtils";
 
 // Central Pagination components (adjust path if needed)
 import {
@@ -100,9 +101,8 @@ const PurchasedPoolTable = ({ purchased }) => {
                     : "-"}
                 </TableCell>
                 <TableCell>
-                  {" "}
                   {item.order_month
-                    ? format(new Date(item.order_month), "dd/MM/yyyy")
+                    ? formatDateShort(item.order_month, true)
                     : "-"}
                 </TableCell>
                 <TableCell>{item.domain || "-"}</TableCell>
