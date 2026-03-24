@@ -154,12 +154,6 @@ const seoSidebarLinks = [
             hasPermission: () => true,
             children: null,
           },
-          {
-            title: "Test Scenario Import",
-            path: "/seo/import/test-scenarios-import",
-            hasPermission: () => true,
-            children: null,
-          },
         ],
       },
       {
