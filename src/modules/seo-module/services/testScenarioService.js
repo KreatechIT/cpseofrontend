@@ -13,6 +13,30 @@ export const fetchTestScenarios = async () => {
   }
 };
 
+export const createTestScenario = async (data) => {
+  try {
+    const res = await axiosInstance.post("/seo/test-scenarios/", data);
+    return res.data;
+  } catch (error) {
+    // Extract detailed error messages
+    if (error.response?.data?.errors) {
+      const errors = error.response.data.errors;
+      if (typeof errors === 'object') {
+        const errorMessages = Object.entries(errors)
+          .map(([field, messages]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
+          .join('\n');
+        toast.error(`Validation errors:\n${errorMessages}`);
+      } else {
+        toast.error(errors);
+      }
+    } else {
+      const msg = error.response?.data?.detail || "Failed to create test scenario";
+      toast.error(msg);
+    }
+    throw error;
+  }
+};
+
 export const updateTestScenario = async (id, data) => {
   try {
     const res = await axiosInstance.patch(`/seo/test-scenarios/${id}/`, data);

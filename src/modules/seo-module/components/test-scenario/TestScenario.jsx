@@ -15,7 +15,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, Edit, Trash2 } from "lucide-react";
+import { CalendarIcon, Edit, Trash2, Plus } from "lucide-react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -30,12 +30,11 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination"; // your central pagination
+} from "@/components/ui/pagination";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -48,6 +47,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import EditTestScenarioForm from "./EditTestScenarioForm";
+import AddTestScenarioForm from "./AddTestScenarioForm";
 import { fetchTestScenarios, deleteTestScenario } from "../../services/testScenarioService";
 import {
   setTestScenarios,
@@ -90,6 +90,9 @@ const TestScenario = () => {
   // Edit dialog
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [scenarioToEdit, setScenarioToEdit] = useState(null);
+
+  // Add dialog
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
 
   // Load data only if not already loaded or stale (e.g., > 5 min old)
   useEffect(() => {
@@ -175,6 +178,11 @@ const TestScenario = () => {
       matchesStartDate &&
       matchesFoundDate
     );
+  }).sort((a, b) => {
+    // Sort by created_date descending (newest first)
+    const dateA = new Date(a.created_date || 0);
+    const dateB = new Date(b.created_date || 0);
+    return dateB - dateA;
   });
 
   const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
@@ -194,20 +202,6 @@ const TestScenario = () => {
     foundDateRange,
   ]);
 
-  const getResultColor = (result) => {
-    switch (result?.toLowerCase()) {
-      case "positive":
-        return "bg-green-100 text-green-800";
-      case "negative":
-        return "bg-red-100 text-red-800";
-      case "neutral":
-        return "bg-yellow-100 text-yellow-800";
-      default:
-        return "";
-    }
-  };
-
-  // Stronger color + bold for the Result column only
   const getResultStrongColor = (result) => {
     switch (result?.toLowerCase()) {
       case "positive":
@@ -257,8 +251,27 @@ const TestScenario = () => {
     }
   };
 
+  const handleAddSuccess = async () => {
+    // Refresh the list after successful add
+    try {
+      const res = await fetchTestScenarios();
+      dispatch(setTestScenarios(res));
+    } catch (error) {
+      console.error("Refresh failed:", error);
+      toast.error("Failed to refresh list. Please reload the page.");
+    }
+  };
+
   return (
     <div className="space-y-8 mt-6">
+      {/* Header with Add Button */}
+      <div className="flex justify-end">
+        <Button onClick={() => setAddDialogOpen(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          Add Test Scenario
+        </Button>
+      </div>
+
       {/* Filters */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div>
@@ -446,7 +459,6 @@ const TestScenario = () => {
               {paginatedData.length > 0 ? (
                 paginatedData.map((row, index) => {
                   const globalIndex = start + index + 1;
-                  const resultColor = getResultColor(row.result);
 
                   return (
                     <TableRow key={row.id}>
@@ -475,14 +487,7 @@ const TestScenario = () => {
                         </a>
                       </TableCell>
                       <TableCell className="whitespace-normal break-words">{row.hypothesis || "-"}</TableCell>
-                      <TableCell
-                        className={`${resultColor} hover:${resultColor.replace(
-                          "50",
-                          "100"
-                        )}`}
-                      >
-                        {row.expected_result || "-"}
-                      </TableCell>
+                      <TableCell>{row.expected_result || "-"}</TableCell>
                       <TableCell>
                         {row.start_date
                         ? format(
@@ -641,22 +646,18 @@ const TestScenario = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Add Dialog */}
+      <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
+        <DialogContent className="sm:max-w-[700px]">
+          <AddTestScenarioForm
+            onClose={() => setAddDialogOpen(false)}
+            onSuccess={handleAddSuccess}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
-};
-
-// Helper for result coloring
-const getResultColor = (result) => {
-  switch (result?.toLowerCase()) {
-    case "positive":
-      return "bg-green-50 hover:bg-green-100";
-    case "negative":
-      return "bg-red-50 hover:bg-red-100";
-    case "neutral":
-      return "bg-yellow-50 hover:bg-yellow-100";
-    default:
-      return "";
-  }
 };
 
 export default TestScenario;
