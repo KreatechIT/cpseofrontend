@@ -20,7 +20,7 @@ import * as XLSX from "xlsx";
 import axiosInstance from "@/services/axiosInstance";
 
 
-const TestScenarioImportForm = () => {
+const TestScenarioImportForm = ({ onSuccess }) => {
   const dispatch = useDispatch();
   const { importedData = [] } = useSelector(
   (state) => state.testScenarioImport || {}
@@ -212,6 +212,9 @@ const TestScenarioImportForm = () => {
       dispatch(clearImportedData());
       setFileName("");
       setFileTitle("");
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (err) {
       toast.error("Import interrupted");
     } finally {

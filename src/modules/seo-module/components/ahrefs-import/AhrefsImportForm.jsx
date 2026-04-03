@@ -229,10 +229,10 @@ const formatDateForAPI = (dateInput) => {
     // Clean string
     const cleanStr = dateInput.trim().split(" ")[0]; // Remove time if present
 
-    // Parse M/D/YY or MM/DD/YY
+    // Parse D/M/YY or DD/MM/YY (International format)
     const parts = cleanStr.split("/");
     if (parts.length === 3) {
-      let [month, day, year] = parts.map(Number);
+      let [day, month, year] = parts.map(Number); // Fixed: DD/MM/YYYY format
       year = year < 100 ? 2000 + year : year;
       month = month || 1; // Default if missing
       day = day || 1;
@@ -283,11 +283,17 @@ const handleImport = async () => {
         let payload = { ...basePayload };
 
         if (importType === "project") {
+          // Generate order_month in MMM YYYY format from First seen date
+          const firstSeenDate = getValue(row, "First seen");
+          const orderMonthFormatted = firstSeenDate 
+            ? format(new Date(formatDateForAPI(firstSeenDate)), "MMM yyyy").toUpperCase()
+            : format(new Date(), "MMM yyyy").toUpperCase();
+          
           // Map fields for /seo/purchased/ including new Ahrefs fields
           payload = {
             ...payload,
-            created_date: formatDateForAPI(getValue(row, "First seen")),
-            order_month: formatDateForAPI(getValue(row, "First seen")),
+            created_date: formatDateForAPI(firstSeenDate),
+            order_month: orderMonthFormatted,
             domain: getValue(row, "Referring page URL")?.split('/')[2] || getValue(row, "Referring page URL"),
             link_type: "Guest Post", // or map from "Type" column if needed
             price_usd: getValue(row, "Keywords") ? "1.00" : "0.00", // placeholder

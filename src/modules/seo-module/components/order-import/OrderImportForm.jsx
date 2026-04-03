@@ -53,6 +53,13 @@ const OrderImportForm = () => {
   const [loading, setLoading] = useState(false);
   const [lastProcessedFile, setLastProcessedFile] = useState("");
   
+  // Publish date options
+  const [publishDateMode, setPublishDateMode] = useState("auto"); // "auto" or "custom"
+  const [publishDateFrom, setPublishDateFrom] = useState(new Date());
+  const [publishDateTo, setPublishDateTo] = useState(
+    new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000)
+  );
+  
   // Modal state for export data
   const [showExportModal, setShowExportModal] = useState(false);
   const [importedOrders, setImportedOrders] = useState([]);
@@ -186,6 +193,33 @@ const OrderImportForm = () => {
     return key ? row[key] : "";
   };
 
+  // Helper to format date for API (DD/MM/YYYY)
+  const formatDateForAPI = (dateInput) => {
+    if (!dateInput) return null;
+
+    let date;
+
+    if (typeof dateInput === "string") {
+      const cleanStr = dateInput.trim().split(" ")[0];
+      const parts = cleanStr.split("/");
+      if (parts.length === 3) {
+        let [day, month, year] = parts.map(Number);
+        year = year < 100 ? 2000 + year : year;
+        date = new Date(year, month - 1, day);
+      } else {
+        date = new Date(cleanStr);
+      }
+    } else if (dateInput instanceof Date) {
+      date = dateInput;
+    } else {
+      return null;
+    }
+
+    if (isNaN(date.getTime())) return null;
+
+    return format(date, "dd/MM/yyyy");
+  };
+
   // Filter data
   const filteredData = importedData?.filter((row) => {
     // Search
@@ -225,19 +259,29 @@ const OrderImportForm = () => {
 
     try {
       // Prepare all orders for bulk import
-      const orders = importedData.map((row) => ({
-        created_date: getValue(row, "Created Date")
-          ? format(new Date(getValue(row, "Created Date")), "dd/MM/yyyy")
-          : format(new Date(), "dd/MM/yyyy"),
-        domain: getValue(row, "Unique Domain") || "",
-        vendor: vendors.find(v => v.id === selectedVendor)?.vendor_name || "",
-        link_type: getValue(row, "Link Type") || "Guest Post",
-        keyword_1: getValue(row, "Keyword (1)") || "",
-        target_url_1: getValue(row, "Target URL (1)") || "",
-        keyword_2: getValue(row, "Keyword (2)") || "",
-        target_url_2: getValue(row, "Target URL (2)") || "",
-        link_amount: parseInt(getValue(row, "Link Amount") || 0),
-      }));
+      const orders = importedData.map((row) => {
+        const order = {
+          created_date: getValue(row, "Created Date")
+            ? formatDateForAPI(getValue(row, "Created Date"))
+            : format(new Date(), "dd/MM/yyyy"),
+          domain: getValue(row, "Domain") || getValue(row, "Unique Domain") || "",
+          vendor: vendors.find(v => v.id === selectedVendor)?.vendor_name || "",
+          link_type: getValue(row, "Link Type") || "Guest Post",
+          keyword_1: getValue(row, "Keyword (1)") || "",
+          target_url_1: getValue(row, "Target URL (1)") || "",
+          keyword_2: getValue(row, "Keyword (2)") || "",
+          target_url_2: getValue(row, "Target URL (2)") || "",
+          link_amount: parseInt(getValue(row, "Link Amount") || 0),
+        };
+
+        // Add optional publish_date if available in Excel
+        const publishDate = getValue(row, "Publish Date");
+        if (publishDate) {
+          order.publish_date = formatDateForAPI(publishDate);
+        }
+
+        return order;
+      });
 
       // Find the selected project
       const selectedProjectObj = projects.find(p => p.id === selectedProject);
@@ -251,10 +295,14 @@ const OrderImportForm = () => {
       // Prepare bulk import payload matching API spec
       const payload = {
         project_id: selectedProjectObj.project_name, // Use project_name like "PA", "PA.1"
-        publish_date_from: format(uploadedDate, "dd/MM/yyyy"),
-        publish_date_to: format(new Date(uploadedDate.getTime() + 30 * 24 * 60 * 60 * 1000), "dd/MM/yyyy"), // 30 days later
         orders: orders,
       };
+
+      // Add publish date range if using custom mode
+      if (publishDateMode === "custom") {
+        payload.publish_date_from = format(publishDateFrom, "dd/MM/yyyy");
+        payload.publish_date_to = format(publishDateTo, "dd/MM/yyyy");
+      }
 
       console.log("Sending payload:", payload);
 
@@ -276,6 +324,39 @@ const OrderImportForm = () => {
       setFileTitle("");
     } catch (error) {
       console.error("Import error:", error);
+      
+      // Handle API error response
+      if (error.response?.data) {
+        const errorData = error.response.data;
+        
+        // Check for validation errors
+        if (errorData.errors) {
+          // Handle orders array errors
+          if (errorData.errors.orders && Array.isArray(errorData.errors.orders)) {
+            const errorMessages = errorData.errors.orders
+              .map((orderError, index) => {
+                const fieldErrors = Object.entries(orderError)
+                  .map(([field, messages]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
+                  .join('; ');
+                return `Order ${index + 1}: ${fieldErrors}`;
+              })
+              .join('\n');
+            toast.error(`Validation errors:\n${errorMessages}`, { duration: 8000 });
+          } else {
+            toast.error(JSON.stringify(errorData.errors));
+          }
+        } else if (errorData.message) {
+          toast.error(errorData.message);
+        } else if (errorData.detail) {
+          toast.error(errorData.detail);
+        } else {
+          toast.error("Import failed. Please check your data.");
+        }
+      } else if (error.message) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
     } finally {
       setLoading(false);
     }
@@ -360,6 +441,57 @@ const OrderImportForm = () => {
               ))}
             </SelectContent>
           </Select>
+        </div>
+
+        {/* Publish Date Options */}
+        <div className="border-t pt-6 space-y-4">
+          <div>
+            <Label className="mb-3">Publish Date Mode</Label>
+            <Select value={publishDateMode} onValueChange={setPublishDateMode}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select publish date mode" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="auto">Auto-generate (from Excel or system)</SelectItem>
+                <SelectItem value="custom">Custom date range</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-sm text-muted-foreground mt-2">
+              {publishDateMode === "auto" 
+                ? "Each order can have its own 'Publish Date' column in Excel (DD/MM/YYYY format), or dates will be auto-generated."
+                : "Links will be distributed evenly between the selected date range."}
+            </p>
+          </div>
+
+          {publishDateMode === "custom" && (
+            <div className="animate-in fade-in-50 duration-200">
+              <Label className="mb-3">Publish Date Range</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left font-normal"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {publishDateFrom && publishDateTo
+                      ? `${format(publishDateFrom, "dd/MM/yyyy")} - ${format(publishDateTo, "dd/MM/yyyy")}`
+                      : "Select date range"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="range"
+                    selected={{ from: publishDateFrom, to: publishDateTo }}
+                    onSelect={(range) => {
+                      if (range?.from) setPublishDateFrom(range.from);
+                      if (range?.to) setPublishDateTo(range.to);
+                    }}
+                    numberOfMonths={2}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          )}
         </div>
       </div>
 

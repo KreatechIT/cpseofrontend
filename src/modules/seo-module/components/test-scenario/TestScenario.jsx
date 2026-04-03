@@ -15,7 +15,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Edit, Trash2, Plus } from "lucide-react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -30,19 +30,32 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination"; // your central pagination
-import { fetchTestScenarios } from "../../services/testScenarioService";
+} from "@/components/ui/pagination";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import EditTestScenarioForm from "./EditTestScenarioForm";
+import AddTestScenarioForm from "./AddTestScenarioForm";
+import { fetchTestScenarios, deleteTestScenario } from "../../services/testScenarioService";
 import {
   setTestScenarios,
   setLoading,
   setError,
 } from "../../store/testScenarioSlice";
 import { cn } from "@/utils/cn";
+import { toast } from "sonner";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -54,9 +67,9 @@ const TestScenario = () => {
 
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedProject, setSelectedProject] = useState("");
-  const [selectedSubProject, setSelectedSubProject] = useState("");
-  const [selectedDomain, setSelectedDomain] = useState("");
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [selectedSubProject, setSelectedSubProject] = useState(null);
+  const [selectedDomain, setSelectedDomain] = useState(null);
   const [implDateRange, setImplDateRange] = useState({ from: null, to: null });
   const [startDateRange, setStartDateRange] = useState({
     from: null,
@@ -69,6 +82,17 @@ const TestScenario = () => {
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Delete confirmation dialog
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [scenarioToDelete, setScenarioToDelete] = useState(null);
+
+  // Edit dialog
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [scenarioToEdit, setScenarioToEdit] = useState(null);
+
+  // Add dialog
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
 
   // Load data only if not already loaded or stale (e.g., > 5 min old)
   useEffect(() => {
@@ -120,11 +144,16 @@ const TestScenario = () => {
       ? row.unique_domain === selectedDomain
       : true;
 
-    const implDate = row.implementation_date
-      ? new Date(row.implementation_date)
-      : null;
-    const startDate = row.start_date ? new Date(row.start_date) : null;
-    const foundDate = row.found_date ? new Date(row.found_date) : null;
+    // Safe date parsing and comparison
+    const parseDate = (dateStr) => {
+      if (!dateStr) return null;
+      const date = new Date(dateStr);
+      return isNaN(date.getTime()) ? null : date;
+    };
+
+    const implDate = parseDate(row.implementation_date);
+    const startDate = parseDate(row.start_date);
+    const foundDate = parseDate(row.found_date);
 
     const matchesImplDate =
       (!implDateRange.from || (implDate && implDate >= implDateRange.from)) &&
@@ -149,6 +178,11 @@ const TestScenario = () => {
       matchesStartDate &&
       matchesFoundDate
     );
+  }).sort((a, b) => {
+    // Sort by created_date descending (newest first)
+    const dateA = new Date(a.created_date || 0);
+    const dateB = new Date(b.created_date || 0);
+    return dateB - dateA;
   });
 
   const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
@@ -168,20 +202,6 @@ const TestScenario = () => {
     foundDateRange,
   ]);
 
-  const getResultColor = (result) => {
-    switch (result?.toLowerCase()) {
-      case "positive":
-        return "bg-green-100 text-green-800";
-      case "negative":
-        return "bg-red-100 text-red-800";
-      case "neutral":
-        return "bg-yellow-100 text-yellow-800";
-      default:
-        return "";
-    }
-  };
-
-  // Stronger color + bold for the Result column only
   const getResultStrongColor = (result) => {
     switch (result?.toLowerCase()) {
       case "positive":
@@ -195,8 +215,63 @@ const TestScenario = () => {
     }
   };
 
+  const handleEdit = (scenario) => {
+    setScenarioToEdit(scenario);
+    setEditDialogOpen(true);
+  };
+
+  const handleDeleteClick = (scenario) => {
+    setScenarioToDelete(scenario);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!scenarioToDelete) return;
+
+    try {
+      await deleteTestScenario(scenarioToDelete.id);
+      // Refresh the list
+      const res = await fetchTestScenarios();
+      dispatch(setTestScenarios(res));
+      setDeleteDialogOpen(false);
+      setScenarioToDelete(null);
+    } catch (error) {
+      console.error("Delete failed:", error);
+    }
+  };
+
+  const handleEditSuccess = async () => {
+    // Refresh the list after successful edit
+    try {
+      const res = await fetchTestScenarios();
+      dispatch(setTestScenarios(res));
+    } catch (error) {
+      console.error("Refresh failed:", error);
+      toast.error("Failed to refresh list. Please reload the page.");
+    }
+  };
+
+  const handleAddSuccess = async () => {
+    // Refresh the list after successful add
+    try {
+      const res = await fetchTestScenarios();
+      dispatch(setTestScenarios(res));
+    } catch (error) {
+      console.error("Refresh failed:", error);
+      toast.error("Failed to refresh list. Please reload the page.");
+    }
+  };
+
   return (
     <div className="space-y-8 mt-6">
+      {/* Header with Add Button */}
+      <div className="flex justify-end">
+        <Button onClick={() => setAddDialogOpen(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          Add Test Scenario
+        </Button>
+      </div>
+
       {/* Filters */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div>
@@ -377,13 +452,13 @@ const TestScenario = () => {
                 <TableHead>Conclusion</TableHead>
                 <TableHead>Next Steps</TableHead>
                 <TableHead>Implementation Date</TableHead>
+                <TableHead className="text-center">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {paginatedData.length > 0 ? (
                 paginatedData.map((row, index) => {
                   const globalIndex = start + index + 1;
-                  const resultColor = getResultColor(row.result);
 
                   return (
                     <TableRow key={row.id}>
@@ -412,14 +487,7 @@ const TestScenario = () => {
                         </a>
                       </TableCell>
                       <TableCell className="whitespace-normal break-words">{row.hypothesis || "-"}</TableCell>
-                      <TableCell
-                        className={`${resultColor} hover:${resultColor.replace(
-                          "50",
-                          "100"
-                        )}`}
-                      >
-                        {row.expected_result || "-"}
-                      </TableCell>
+                      <TableCell>{row.expected_result || "-"}</TableCell>
                       <TableCell>
                         {row.start_date
                         ? format(
@@ -458,6 +526,25 @@ const TestScenario = () => {
                             "dd/MM/yyyy"
                           )
                         : "-"}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center justify-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEdit(row)}
+                          >
+                            <Edit className="h-4 w-4 mr-1" />
+                            Edit
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleDeleteClick(row)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   );
@@ -515,22 +602,62 @@ const TestScenario = () => {
           </Pagination>
         )}
       </div>
+
+      {/* Edit Dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="sm:max-w-[700px]">
+          {scenarioToEdit && (
+            <EditTestScenarioForm
+              scenario={scenarioToEdit}
+              onClose={() => {
+                setEditDialogOpen(false);
+                setScenarioToEdit(null);
+              }}
+              onSuccess={handleEditSuccess}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Test Scenario</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this test scenario? This action cannot be undone.
+              {scenarioToDelete && (
+                <div className="mt-2 p-2 bg-muted rounded">
+                  <p className="font-medium">{scenarioToDelete.test_scenario}</p>
+                </div>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setScenarioToDelete(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Add Dialog */}
+      <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
+        <DialogContent className="sm:max-w-[700px]">
+          <AddTestScenarioForm
+            onClose={() => setAddDialogOpen(false)}
+            onSuccess={handleAddSuccess}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
-};
-
-// Helper for result coloring
-const getResultColor = (result) => {
-  switch (result?.toLowerCase()) {
-    case "positive":
-      return "bg-green-50 hover:bg-green-100";
-    case "negative":
-      return "bg-red-50 hover:bg-red-100";
-    case "neutral":
-      return "bg-yellow-50 hover:bg-yellow-100";
-    default:
-      return "";
-  }
 };
 
 export default TestScenario;
