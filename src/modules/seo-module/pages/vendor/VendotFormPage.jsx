@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "@/services/axiosInstance";
@@ -12,10 +12,16 @@ import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 import DateField from "@/components/form-fields/DateField";
 import { format } from "date-fns";
+// Import Redux actions
+import {
+  addVendor,
+  updateVendor,
+} from "../../store/vendorSlice";
 // import { Formik } from "formik";
 // import { addVendorSchema } from "@/modules/seo-module/validations/vendorValidationSchema";
 
 const VendorFormPage = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
   const isEditMode = !!id;
@@ -175,10 +181,12 @@ const handleSubmit = async (e) => {
 
   try {
     if (isEditMode) {
-      await axiosInstance.put(`/seo/vendors/${id}/`, payload);
+      const res = await axiosInstance.put(`/seo/vendors/${id}/`, payload);
+      dispatch(updateVendor(res.data));
       toast.success("Vendor updated successfully!");
     } else {
-      await axiosInstance.post("/seo/vendors/", payload);
+     const res = await axiosInstance.post("/seo/vendors/", payload);
+      dispatch(addVendor(res.data));
       toast.success("Vendor added successfully!");
     }
     navigate("/seo/vendor/vendor-details");
@@ -188,7 +196,8 @@ const handleSubmit = async (e) => {
       error.response?.data
         ? Object.values(error.response.data).flat().join("; ")
         : "Failed to save vendor";
-    toast.error(msg);
+    toast.error("Failed to save vendor");
+    console.error(msg);
   } finally {
     setLoading(false);
   }
@@ -283,7 +292,7 @@ const handleSubmit = async (e) => {
             {/* Left: Payment Method */}
             <div className="border rounded-lg p-6">
               <h3 className="font-semibold mb-4">Payment Method</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
                 <div>
                   <Label className="mb-3">Method</Label>
                   <Input name="payment_method" value={formData.payment_method} onChange={handleChange} />
@@ -302,7 +311,7 @@ const handleSubmit = async (e) => {
                 <div>
                   <Label className="mb-3">Link Type</Label>
                   <Select value={formData.price_by_link_type} onValueChange={(v) => handleSelectChange("price_by_link_type", v)}>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select link type" />
                     </SelectTrigger>
                     <SelectContent>

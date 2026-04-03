@@ -82,7 +82,7 @@ const LinkSimilarity = () => {
   if (error || !data.length) {
     return (
       <div className="text-center py-12 text-red-600">
-        No data available or error loading.
+        No data available.
       </div>
     );
   }
