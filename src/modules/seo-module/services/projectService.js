@@ -97,3 +97,14 @@ export const archiveProject = async (organisation_id, project_id, dispatch) => {
     // Error handled globally
   }
 };
+
+// Get audit log for a specific project
+export const getProjectAuditLog = async (project_id) => {
+  try {
+    const res = await axiosInstance.get(`/seo/projects/${project_id}/audit-log/`);
+    return res.data;
+  } catch (error) {
+    console.error("Failed to fetch project audit log:", error);
+    throw error;
+  }
+};

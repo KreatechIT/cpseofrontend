@@ -9,7 +9,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   isOpen: false, // Tracks if sheet is open
   type: null, // Type of sheet to show. Should match a key in sheetRegistry for dynamic rendering.
-  props: null, // Props to pass to the sheet component
+  data: null, // Data to pass to the sheet component
   styles: "", // Optional custom styles for the sheet
 };
 
@@ -26,16 +26,16 @@ const sheetSlice = createSlice({
     closeSheet: (state) => {
       state.isOpen = false;
       state.type = null;
-      state.props = null;
+      state.data = null;
       state.styles = "";
     },
 
-    // Set multiple sheet fields at once (type, props, styles)
+    // Set multiple sheet fields at once (type, data, styles)
     setSheetData: (state, { payload }) => {
-      const { type, props, styles } = payload;
+      const { type, data, styles } = payload;
 
       state.type = type || null;
-      state.props = props || null;
+      state.data = data || null;
       state.styles = styles || "";
 
       state.isOpen = true;

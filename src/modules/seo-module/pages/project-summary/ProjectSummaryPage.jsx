@@ -1,7 +1,7 @@
 import usePermission from "@/hooks/usePermission";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
-import { setDialogData } from "@/store/reducers/dialogSlice";
+import { setSheetData } from "@/store/reducers/sheetSlice";
 import { TableSkeleton } from "@/components/ui/skeleton";
 import { useEffect, useState, useMemo } from "react";
 import SelectFilter from "@/components/filters/SelectFilter";
@@ -28,9 +28,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon } from "lucide-react";
-import ProjectHistoryDrawer from "../../components/history/ProjectHistoryDrawer";
+import { CalendarIcon, History } from "lucide-react";
 import axiosInstance from "@/services/axiosInstance";
+import { toast } from "sonner";
 
 const ProjectSummaryPage = () => {
   const dispatch = useDispatch();
@@ -66,15 +66,7 @@ const ProjectSummaryPage = () => {
     fetchProjects();
   }, [user?.organisation_id, allProjects, dispatch]);
 
-  const openHistoryDrawer = () => {
-    dispatch(
-      setDialogData({
-        type: "projectHistoryLog",
-        side: "left",
-        styles: "w-full max-w-md h-full",
-      })
-    );
-  };
+
 
   // Dropdown options
   const statusOptions = useMemo(() => {
@@ -183,39 +175,71 @@ const ProjectSummaryPage = () => {
     (Array.isArray(selectedPics) && selectedPics.length > 0) ||
     dateRange.from;
 
+  const [selectedProjectHistory, setSelectedProjectHistory] = useState(null);
   const [projectHistoryLogs, setProjectHistoryLogs] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
 
-  // Fetch history on mount or when needed
-  useEffect(() => {
-    const fetchHistory = async () => {
-      if (!user?.organisation_id) return;
-      setHistoryLoading(true);
-      try {
-        // Replace with your actual endpoint
-        const res = await axiosInstance.get(`/seo/projects/history/`);
-        // Or if per-project: `/seo/projects/${projectId}/history/`
-        setProjectHistoryLogs(res.data);
-      } catch (err) {
-        console.error("Failed to load history:", err);
-        setProjectHistoryLogs([]);
-      } finally {
-        setHistoryLoading(false);
-      }
-    };
+  // Fetch audit log for a specific project
+  const fetchProjectAuditLog = async (project) => {
+    setHistoryLoading(true);
+    setSelectedProjectHistory(project);
+    setProjectHistoryLogs([]);
+    
+    // Open the sheet immediately with loading state
+    dispatch(
+      setSheetData({
+        type: "projectHistoryLog",
+        styles: "w-full max-w-6xl h-full",
+        data: {
+          historyLogs: [],
+          projectName: project.project_name,
+          loading: true,
+        },
+      })
+    );
 
-    fetchHistory();
-  }, [user?.organisation_id]);
+    try {
+      const res = await axiosInstance.get(`/seo/projects/${project.id}/audit-log/`);
+      setProjectHistoryLogs(res.data);
+      
+      // Update the sheet with loaded data
+      dispatch(
+        setSheetData({
+          type: "projectHistoryLog",
+          styles: "w-full max-w-6xl h-full",
+          data: {
+            historyLogs: res.data,
+            projectName: project.project_name,
+            loading: false,
+          },
+        })
+      );
+    } catch (err) {
+      console.error(`Failed to load audit log for project ${project.id}:`, err);
+      toast.error("Failed to load project history");
+      
+      // Update sheet with error state
+      dispatch(
+        setSheetData({
+          type: "projectHistoryLog",
+          styles: "w-full max-w-6xl h-full",
+          data: {
+            historyLogs: [],
+            projectName: project.project_name,
+            loading: false,
+          },
+        })
+      );
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
   return (
     <>
       <title>Project Summary - Core360</title>
       <main className="mt-1 flex h-full flex-col p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="font-sans text-2xl font-medium">Project Summary</h2>
-          {/* Pass real history data here */}
-          <ProjectHistoryDrawer historyLogs={projectHistoryLogs}>
-            <Button variant="outline">History Log</Button>
-          </ProjectHistoryDrawer>
         </div>
         {/* Filters — Same pattern as EmployeeDatabase */}
         <div className="mb-6">
@@ -310,6 +334,7 @@ const ProjectSummaryPage = () => {
                   <TableHead>Web Server</TableHead>
                   <TableHead>Login IPs</TableHead>
                   <TableHead>Remarks</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -416,12 +441,24 @@ const ProjectSummaryPage = () => {
                         <TableCell className="whitespace-pre-line">
                           {project.remarks || demoRemark}
                         </TableCell>
+                        
+                        {/* Actions column with History button */}
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => fetchProjectAuditLog(project)}
+                            disabled={historyLoading}
+                          >
+                            <History className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
                       </TableRow>
                     );
                   })
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={16} className="h-24 text-center">
+                    <TableCell colSpan={17} className="h-24 text-center">
                       No data available.
                     </TableCell>
                   </TableRow>
