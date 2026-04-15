@@ -7,7 +7,6 @@ import { useEffect, useState, useMemo } from "react";
 import SelectFilter from "@/components/filters/SelectFilter";
 import {
   ClearFilterButton,
-  FilterButton,
 } from "@/components/filters/FilterButtons";
 import { getAllProjects } from "../../services/projectService";
 import {
@@ -46,7 +45,6 @@ const ProjectSummaryPage = () => {
   const [selectedLocations, setSelectedLocations] = useState([]);
   const [selectedPics, setSelectedPics] = useState([]);
   const [dateRange, setDateRange] = useState({ from: null, to: null });
-  const [isFilterApplied, setIsFilterApplied] = useState(false);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -91,7 +89,7 @@ const ProjectSummaryPage = () => {
 
   const picOptions = useMemo(() => {
     if (!allProjects) return [];
-    return [...new Set(allProjects.map((p) => p.pic).filter(Boolean))].map(
+    return [...new Set(allProjects.map((p) => p.pic_name).filter(Boolean))].map(
       (value) => ({
         value,
         label: value || "Unassigned",
@@ -113,36 +111,34 @@ const ProjectSummaryPage = () => {
     );
   }, [allProjects, searchQuery]);
 
-  // Final filtered result — only after Apply
+  // Final filtered result
   const filteredProjects = useMemo(() => {
     let result = searchFiltered;
 
-    if (isFilterApplied) {
-      // Safely convert to arrays
-      const statuses = Array.isArray(selectedStatuses) ? selectedStatuses : [];
-      const locations = Array.isArray(selectedLocations)
-        ? selectedLocations
-        : [];
-      const pics = Array.isArray(selectedPics) ? selectedPics : [];
+    // Safely convert to arrays
+    const statuses = Array.isArray(selectedStatuses) ? selectedStatuses : [];
+    const locations = Array.isArray(selectedLocations)
+      ? selectedLocations
+      : [];
+    const pics = Array.isArray(selectedPics) ? selectedPics : [];
 
-      if (statuses.length > 0) {
-        result = result.filter((p) => statuses.includes(p.status));
-      }
-      if (locations.length > 0) {
-        result = result.filter((p) => locations.includes(p.server_location));
-      }
-      if (pics.length > 0) {
-        result = result.filter((p) => pics.includes(p.pic));
-      }
-      if (dateRange.from || dateRange.to) {
-        result = result.filter((p) => {
-          if (!p.domain_expires) return false;
-          const exp = new Date(p.domain_expires);
-          if (dateRange.from && exp < dateRange.from) return false;
-          if (dateRange.to && exp > dateRange.to) return false;
-          return true;
-        });
-      }
+    if (statuses.length > 0) {
+      result = result.filter((p) => statuses.includes(p.status));
+    }
+    if (locations.length > 0) {
+      result = result.filter((p) => locations.includes(p.server_location));
+    }
+    if (pics.length > 0) {
+      result = result.filter((p) => pics.includes(p.pic_name));
+    }
+    if (dateRange.from || dateRange.to) {
+      result = result.filter((p) => {
+        if (!p.domain_expires) return false;
+        const exp = new Date(p.domain_expires);
+        if (dateRange.from && exp < dateRange.from) return false;
+        if (dateRange.to && exp > dateRange.to) return false;
+        return true;
+      });
     }
 
     return result;
@@ -152,12 +148,7 @@ const ProjectSummaryPage = () => {
     selectedLocations,
     selectedPics,
     dateRange,
-    isFilterApplied,
   ]);
-
-  const handleApplyFilters = () => {
-    setIsFilterApplied(true);
-  };
 
   const handleClearFilters = () => {
     setSearchQuery("");
@@ -165,7 +156,6 @@ const ProjectSummaryPage = () => {
     setSelectedLocations([]);
     setSelectedPics([]);
     setDateRange({ from: null, to: null });
-    setIsFilterApplied(false);
   };
 
   const isAnyFilterActive =
@@ -299,8 +289,6 @@ const ProjectSummaryPage = () => {
               </PopoverContent>
             </Popover>
 
-            <FilterButton onClick={handleApplyFilters} />
-
             {isAnyFilterActive && (
               <ClearFilterButton onClick={handleClearFilters} />
             )}
@@ -379,7 +367,7 @@ const ProjectSummaryPage = () => {
                           )}
                         </TableCell>
                         <TableCell className="text-[10px] uppercase">
-                          {project.pic?.split("-")[0] || "-"}
+                          {project.pic_name?.split("-")[0] || "-"}
                         </TableCell>
                         <TableCell>
                           <div className="text-[10px] leading-tight">
@@ -449,6 +437,7 @@ const ProjectSummaryPage = () => {
                             size="sm"
                             onClick={() => fetchProjectAuditLog(project)}
                             disabled={historyLoading}
+                            className="cursor-pointer"
                           >
                             <History className="h-4 w-4" />
                           </Button>

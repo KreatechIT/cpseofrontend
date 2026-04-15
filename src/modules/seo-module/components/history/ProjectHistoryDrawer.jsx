@@ -1,4 +1,3 @@
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Table,
   TableBody,
@@ -55,65 +54,63 @@ const ProjectHistoryDrawer = () => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="border-b pb-4 mb-4">
+      <div className="border-b pb-4 mb-4 px-4">
         <h2 className="text-2xl font-semibold">{projectName} - History Log</h2>
         <p className="text-sm text-muted-foreground mt-1">
           Complete audit trail of all project changes
         </p>
       </div>
 
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 p-4">
         {loading ? (
           <div className="flex items-center justify-center h-full">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
         ) : (
-          <ScrollArea className="h-full w-full rounded-md border">
-            <div className="min-w-[1000px]">
-              <Table>
-                <TableHeader className="bg-muted/50">
-                  <TableRow>
-                    <TableHead className="w-[180px]">Date & Time</TableHead>
-                    <TableHead className="w-[200px]">Changed By</TableHead>
-                    <TableHead className="w-[180px]">Field</TableHead>
-                    <TableHead className="min-w-[200px]">Old Value</TableHead>
-                    <TableHead className="min-w-[200px]">New Value</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {transformedLogs.length > 0 ? (
-                    transformedLogs.map((log) => (
-                      <TableRow key={log.id}>
-                        <TableCell className="font-mono text-sm">
-                          {log.date
-                            ? format(new Date(log.date), "dd MMM yyyy, HH:mm")
-                            : "-"}
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          {log.changed_by || "-"}
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          {log.field || "-"}
-                        </TableCell>
-                        <TableCell className="text-muted-foreground max-w-xs break-words">
-                          {log.old_value ?? "-"}
-                        </TableCell>
-                        <TableCell className="font-medium max-w-xs break-words">
-                          {log.new_value ?? "-"}
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={5} className="h-96 text-center text-muted-foreground">
-                        No history records found.
+          <div className="h-full rounded-md border overflow-auto">
+            <Table className="min-w-[1000px]">
+              <TableHeader className="bg-muted/50">
+                <TableRow>
+                  <TableHead className="w-[180px]">Date & Time</TableHead>
+                  <TableHead className="w-[200px]">Changed By</TableHead>
+                  <TableHead className="w-[180px]">Field</TableHead>
+                  <TableHead className="min-w-[200px]">Old Value</TableHead>
+                  <TableHead className="min-w-[200px]">New Value</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {transformedLogs.length > 0 ? (
+                  transformedLogs.map((log) => (
+                    <TableRow key={log.id}>
+                      <TableCell className="font-mono text-sm">
+                        {log.date
+                          ? format(new Date(log.date), "dd MMM yyyy, HH:mm")
+                          : "-"}
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        {log.changed_by || "-"}
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        {log.field || "-"}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground max-w-xs break-words">
+                        {log.old_value ?? "-"}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground max-w-xs break-words">
+                        {log.new_value ?? "-"}
                       </TableCell>
                     </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          </ScrollArea>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={5} className="h-96 text-center text-muted-foreground">
+                      No history records found.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
         )}
       </div>
     </div>

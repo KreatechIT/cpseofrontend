@@ -8,15 +8,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "@/services/axiosInstance";
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
+import { addProjectData, editProjectData } from "../../store/projectSlice";
 
 const ProjectFormPage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { id } = useParams();
   const isEditMode = !!id;
 
@@ -116,7 +118,26 @@ const ProjectFormPage = () => {
   }, [id, isEditMode, organisationId, navigate]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    
+    // If changing project_name, auto-generate sub_project_name and project_id
+    if (name === "project_name") {
+      // Generate abbreviation from project name
+      // "Plan A" -> "PA", "Project Beta" -> "PB", "Test Project" -> "TP"
+      const words = value.trim().split(/\s+/);
+      const abbreviation = words
+        .map(word => word.charAt(0).toUpperCase())
+        .join('');
+      
+      setFormData({ 
+        ...formData, 
+        project_name: value,
+        sub_project_name: abbreviation,
+        project_id: abbreviation ? `${abbreviation} 1` : ""
+      });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleSelectChange = (field, value) => {
@@ -135,10 +156,14 @@ const ProjectFormPage = () => {
       const payload = { ...formData };
 
       if (isEditMode) {
-        await axiosInstance.put(`/seo/projects/${id}/`, payload);
+        const response = await axiosInstance.put(`/seo/projects/${id}/`, payload);
+        // Update Redux state with the updated project
+        dispatch(editProjectData(response.data));
         toast.success("Project updated successfully!");
       } else {
-        await axiosInstance.post("/seo/projects/", payload);
+        const response = await axiosInstance.post("/seo/projects/", payload);
+        // Add new project to Redux state
+        dispatch(addProjectData(response.data));
         toast.success("Project added successfully!");
       }
       navigate("/seo/project-configuration");
@@ -414,15 +439,15 @@ const ProjectFormPage = () => {
               <div>
                 <Label className="mb-2 block">
                   Impressions{" "}
-                  <span className="text-red-500">
+                  {/* <span className="text-red-500">
                     {" "}
                     <span className="text-red-500">*</span>
-                  </span>
+                  </span> */}
                 </Label>
                 <Input
                   name="impressions"
                   type="number"
-                  required
+                  // required
                   value={formData.impressions || ""}
                   onChange={handleChange}
                   placeholder="0"
@@ -431,15 +456,15 @@ const ProjectFormPage = () => {
               <div>
                 <Label className="mb-2 block">
                   Clicks{" "}
-                  <span className="text-red-500">
+                  {/* <span className="text-red-500">
                     {" "}
                     <span className="text-red-500">*</span>
-                  </span>
+                  </span> */}
                 </Label>
                 <Input
                   name="clicks"
                   type="number"
-                  required
+                  // required
                   value={formData.clicks || ""}
                   onChange={handleChange}
                   placeholder="0"

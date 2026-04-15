@@ -26,20 +26,20 @@ function SelectFilter({ options, selected, setSelected, title }) {
           size="sm"
           className={cn(
             "h-9 text-foreground/60",
-            selected && "text-foreground/80"
+            selected && selected.length > 0 && "text-foreground/80"
           )}
         >
           {title}
 
           <ChevronDownIcon className="size-4 mt-0.5 opacity-75" />
-          {selected && (
+          {selected && selected.length > 0 && (
             <>
               <Separator orientation="vertical" className="mx-2 h-4" />
               <Badge
                 variant="secondary"
                 className="rounded-sm px-1 font-normal"
               >
-                {options.find((o) => o.value === selected)?.label}
+                {selected.length} selected
               </Badge>
             </>
           )}
@@ -53,12 +53,16 @@ function SelectFilter({ options, selected, setSelected, title }) {
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
               {options.map((option) => {
-                const isSelected = selected === option.value;
+                const isSelected = selected.includes(option.value);
                 return (
                   <CommandItem
                     key={option.value}
                     onSelect={() => {
-                      setSelected(isSelected ? null : option.value);
+                      if (isSelected) {
+                        setSelected(selected.filter(s => s !== option.value));
+                      } else {
+                        setSelected([...selected, option.value]);
+                      }
                     }}
                   >
                     <div

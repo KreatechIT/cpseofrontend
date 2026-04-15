@@ -2,7 +2,6 @@ import usePermission from "@/hooks/usePermission";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
-import { setDialogData } from "@/store/reducers/dialogSlice";
 import { TableSkeleton } from "@/components/ui/skeleton";
 import { useEffect, useState, useMemo } from "react";
 import SelectFilter from "@/components/filters/SelectFilter";
@@ -11,6 +10,7 @@ import {
   FilterButton,
 } from "@/components/filters/FilterButtons";
 import { getAllProjects } from "../../services/projectService";
+import { removeProjectData } from "../../store/projectSlice";
 import {
   Table,
   TableBody,
@@ -146,12 +146,12 @@ const ProjectConfigurationPage = () => {
       // Call your DELETE API
       await axiosInstance.delete(`/seo/projects/${projectToDelete.id}/`);
 
+      // Update Redux state to remove the deleted project
+      dispatch(removeProjectData({ id: projectToDelete.id }));
+
       toast.success(
         `"${projectToDelete.project_name}" has been deleted successfully.`,
       );
-
-      // Refetch projects to update the table
-      await getAllProjects(user.organisation_id, dispatch);
     } catch (error) {
       console.error("Delete failed:", error);
       toast.error("Failed to delete project. Please try again.");
