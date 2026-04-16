@@ -154,6 +154,18 @@ const ProjectFormPage = () => {
     setLoading(true);
     try {
       const payload = { ...formData };
+      
+      // Omit fields with empty strings to prevent API validation errors
+      // The API expects integers for numeric fields, so we remove them if empty
+      if (payload.impressions === "") {
+        delete payload.impressions;
+      }
+      if (payload.clicks === "") {
+        delete payload.clicks;
+      }
+      if (payload.website === "") {
+        delete payload.website;
+      }
 
       if (isEditMode) {
         const response = await axiosInstance.put(`/seo/projects/${id}/`, payload);
