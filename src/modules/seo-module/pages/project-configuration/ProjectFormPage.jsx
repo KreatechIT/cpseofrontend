@@ -183,6 +183,18 @@ const ProjectFormPage = () => {
     }
 
     // Validate required fields
+    if (!formData.launched_date) {
+      toast.error("Launched Date is required");
+      return;
+    }
+    if (!formData.domain_created) {
+      toast.error("Domain Created Date is required");
+      return;
+    }
+    if (!formData.domain_expires) {
+      toast.error("Domain Expired Date is required");
+      return;
+    }
     if (!formData.pic) {
       toast.error("PIC (Person In Charge) is required");
       return;
