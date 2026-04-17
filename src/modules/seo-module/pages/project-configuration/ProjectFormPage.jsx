@@ -329,27 +329,16 @@ const ProjectFormPage = () => {
                 <DateField
                   fieldName="launched_date"
                   label="Launched Date"
-                  required
+                  isRequired={true}
                   date={formData.launched_date}
                   setDate={(date) => setFormData({ ...formData, launched_date: date })}
                 />
-                {/* <Label className="mb-2 block">
-                  Launched Date <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  name="launched_date"
-                  type="date"
-                  required
-                  value={formData.launched_date}
-                  onChange={handleChange}
-                  className="w-[100%] md:w-full"
-                /> */}
               </div>
               <div>
                 <DateField
                   fieldName="domain_created"
                   label="Domain Created"
-                  required
+                  isRequired={true}
                   date={formData.domain_created}
                   setDate={(date) => setFormData({ ...formData, domain_created: date })}
                 />                
@@ -357,8 +346,8 @@ const ProjectFormPage = () => {
               <div>
                  <DateField
                   fieldName="domain_expires"
-                  label="Domain Expires "
-                  required
+                  label="Domain Expires"
+                  isRequired={true}
                   date={formData.domain_expires}
                   setDate={(date) => setFormData({ ...formData, domain_expires: date })}
                 />  
@@ -367,6 +356,7 @@ const ProjectFormPage = () => {
                 <DateField
                   fieldName="due_date"
                   label="Due Date"
+                  isRequired={false}
                   date={formData.due_date}
                   setDate={(date) => setFormData({ ...formData, due_date: date })}
                 />                 

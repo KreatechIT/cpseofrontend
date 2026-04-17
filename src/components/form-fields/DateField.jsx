@@ -20,6 +20,8 @@ export default function DateField({
   setDate,
   isRequired = true,
   disabled = false,
+  startMonth = new Date(1960, 0), // January 1960
+  endMonth = new Date(2100, 11), // December 2100
 }) {
   return (
     <div>
@@ -72,8 +74,11 @@ export default function DateField({
                 month_caption: "mx-0",
               }}
               captionLayout="dropdown"
-              defaultMonth={new Date()}
-              startMonth={new Date(1960, 6)}
+              defaultMonth={date || new Date()}
+              fromDate={startMonth}
+              toDate={endMonth}
+              fromYear={1960}
+              toYear={2100}
             />
           </PopoverContent>
         </Popover>
