@@ -29,6 +29,7 @@ const ProjectFormPage = () => {
   const [fetching, setFetching] = useState(isEditMode);
   const [members, setMembers] = useState([]);
   const [membersLoading, setMembersLoading] = useState(true);
+  const [manualSubProject, setManualSubProject] = useState(false); // Track if user manually edited sub_project_name
 
   const [formData, setFormData] = useState({
     project_name: "",
@@ -120,21 +121,49 @@ const ProjectFormPage = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     
-    // If changing project_name, auto-generate sub_project_name and project_id
-    if (name === "project_name") {
-      // Generate abbreviation from project name
-      // "Plan A" -> "PA", "Project Beta" -> "PB", "Test Project" -> "TP"
-      const words = value.trim().split(/\s+/);
+    // If user manually edits sub_project_name, mark it as manual
+    if (name === "sub_project_name") {
+      setManualSubProject(true);
+      // Update project_id based on manual sub_project input
+      const words = formData.project_name.trim().split(/\s+/);
       const abbreviation = words
         .map(word => word.charAt(0).toUpperCase())
         .join('');
       
       setFormData({ 
         ...formData, 
-        project_name: value,
-        sub_project_name: abbreviation,
-        project_id: abbreviation ? `${abbreviation} 1` : ""
+        sub_project_name: value,
+        project_id: abbreviation && value ? `${abbreviation}.${value}` : ""
       });
+      return;
+    }
+    
+    // If changing project_name, auto-generate sub_project_name and project_id
+    if (name === "project_name") {
+      // Generate abbreviation from project name
+      // "Plan A" -> "PA", "Hello" -> "H", "Hello World" -> "HW"
+      const words = value.trim().split(/\s+/);
+      const abbreviation = words
+        .map(word => word.charAt(0).toUpperCase())
+        .join('');
+      
+      // Only auto-generate sub_project if user hasn't manually edited it
+      if (!manualSubProject) {
+        setFormData({ 
+          ...formData, 
+          project_name: value,
+          sub_project_name: "1",
+          project_id: abbreviation ? `${abbreviation}.1` : ""
+        });
+      } else {
+        // User has manual sub_project, just update project_name and project_id
+        const subProject = formData.sub_project_name || "1";
+        setFormData({ 
+          ...formData, 
+          project_name: value,
+          project_id: abbreviation ? `${abbreviation}.${subProject}` : ""
+        });
+      }
     } else {
       setFormData({ ...formData, [name]: value });
     }
@@ -281,8 +310,11 @@ const ProjectFormPage = () => {
                   name="sub_project_name"
                   value={formData.sub_project_name}
                   onChange={handleChange}
-                  placeholder="Optional sub-project name"
+                  placeholder="Sub Project"
                 />
+                {/* <p className="text-xs text-muted-foreground mt-1">
+                  Defaults to "1", or enter custom value (e.g., 2, 3, etc.)
+                </p> */}
               </div>
             </div>
           </div>
@@ -330,10 +362,9 @@ const ProjectFormPage = () => {
               </div>
               <div>
                 <Label className="mb-2 block">
-                  Due Date <span className="text-red-500">*</span>
+                  Due Date 
                 </Label>
                 <Input
-                  required
                   name="due_date"
                   type="date"
                   value={formData.due_date}

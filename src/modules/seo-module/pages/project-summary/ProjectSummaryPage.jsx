@@ -370,12 +370,13 @@ const ProjectSummaryPage = () => {
                           {project.pic_name?.split("-")[0] || "-"}
                         </TableCell>
                         <TableCell>
-                          <div className="text-[10px] leading-tight">
+                          {/* <div className="text-[10px] leading-tight">
                             <span className="text-gray-500">I:</span>{" "}
                             {project.impressions?.toLocaleString()} <br />
                             <span className="text-gray-500">C:</span>{" "}
                             {project.clicks?.toLocaleString()}
-                          </div>
+                          </div> */}
+                          {project.owner_name?.split("-")[0] || "-"}
                         </TableCell>
                         <TableCell>
                           {project.launched_date
