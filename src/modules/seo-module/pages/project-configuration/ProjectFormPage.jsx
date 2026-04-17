@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 import { addProjectData, editProjectData } from "../../store/projectSlice";
 import DateField from "@/components/form-fields/DateField";
+import { format } from "date-fns";
 
 const ProjectFormPage = () => {
   const navigate = useNavigate();
@@ -181,21 +182,41 @@ const ProjectFormPage = () => {
       return;
     }
 
+    // Validate required fields
+    if (!formData.pic) {
+      toast.error("PIC (Person In Charge) is required");
+      return;
+    }
+    if (!formData.owner) {
+      toast.error("Owner is required");
+      return;
+    }
+
     setLoading(true);
     try {
-      const payload = { ...formData };
+      const payload = {};
       
-      // Omit fields with empty strings to prevent API validation errors
-      // The API expects integers for numeric fields, so we remove them if empty
-      if (payload.impressions === "") {
-        delete payload.impressions;
-      }
-      if (payload.clicks === "") {
-        delete payload.clicks;
-      }      
-      if (payload.due_date === "") {
-        delete payload.due_date;
-      }
+      // Only include fields that have values (not empty strings or null)
+      Object.keys(formData).forEach((key) => {
+        const value = formData[key];
+        
+        // Skip empty strings and null values
+        if (value === "" || value === null || value === undefined) {
+          return;
+        }
+        
+        // Handle date fields - convert to YYYY-MM-DD format
+        if (["launched_date", "domain_created", "domain_expires", "due_date"].includes(key)) {
+          try {
+            payload[key] = format(new Date(value), "yyyy-MM-dd");
+          } catch (error) {
+            console.error(`Invalid date for ${key}:`, value);
+          }
+        } else {
+          // Include non-empty values
+          payload[key] = value;
+        }
+      });
 
       if (isEditMode) {
         const response = await axiosInstance.put(`/seo/projects/${id}/`, payload);
@@ -406,6 +427,7 @@ const ProjectFormPage = () => {
                   value={formData.pic}
                   onValueChange={(v) => handleSelectChange("pic", v)}
                   className="w-full"
+                  required
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select PIC" />
@@ -447,6 +469,7 @@ const ProjectFormPage = () => {
                 <Select
                   value={formData.owner}
                   onValueChange={(v) => handleSelectChange("owner", v)}
+                  required
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select Owner" />

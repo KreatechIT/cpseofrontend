@@ -20,8 +20,8 @@ export default function DateField({
   setDate,
   isRequired = true,
   disabled = false,
-  startMonth = new Date(1960, 0), // January 1960
-  endMonth = new Date(2100, 11), // December 2100
+  startMonth = new Date(1960, 0),
+  endMonth = new Date(2100, 11), 
 }) {
   return (
     <div>
