@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Pagination,
   PaginationContent,
@@ -28,9 +28,7 @@ const CpMilestonesTable = ({ milestones }) => {
   const totalPages = Math.ceil(milestones.length / ITEMS_PER_PAGE);
   const start = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginated = milestones.slice(start, start + ITEMS_PER_PAGE);
-const getCellBackgroundColor = (isAchieved) => {
-  return isAchieved ? "bg-green-50" : "bg-red-50";
-};
+
   return (
     <div className="border rounded-lg">
     <CardHeader className="py-5">
@@ -51,19 +49,31 @@ const getCellBackgroundColor = (isAchieved) => {
           <TableBody>
             {paginated.map((m, index) => {
               const isAchieved = m.status === "achieved";
+              
+              // Determine the message based on achievement status
+              let message = "";
+              if (isAchieved) {
+                message = "- If results achieve before and on the due date, message pops out";
+              } else {
+                message = "- If results is not achieved on the due date, message still pops out";
+              }
+              
               return (
-                // <TableRow key={index} className={getCellBackgroundColor(isAchieved)}>
                 <TableRow key={index}>
-                  <TableCell>{m.keywords_target}</TableCell>
-                  <TableCell>-</TableCell> {/* No date field */}
-                  {/* <TableCell>-</TableCell> No note */}
-                  <TableCell>Achieved {m.impressions_actual?.toLocaleString() || "0"} impressions</TableCell>
+                  <TableCell>
+                    {/* <span className={isAchieved ? "text-green-600" : "text-red-600"}> */}
+                    <span>
+                      {message}
+                    </span>
+                  </TableCell>
+                  <TableCell>{m.date}</TableCell>
+                  <TableCell>
+                    {m.message}
+                  </TableCell>
                   <TableCell>{safeFormatDate(m.due_date)}</TableCell>
                   
-                  <TableCell
-                    // className={isAchieved ? "bg-green-50 hover:bg-green-100" : "bg-red-50 hover:bg-red-100"}
-                  >
-                    <span className={isAchieved ? "text-green-600" : "text-red-600"}>
+                  <TableCell>
+                    <span className={isAchieved ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
                       {isAchieved ? "Achieved" : "Not Achieved"}
                     </span>
                   </TableCell>
@@ -75,7 +85,7 @@ const getCellBackgroundColor = (isAchieved) => {
       </ScrollArea>
 
       {totalPages > 1 && (
-        <Pagination className="mt-4 flex justify-center">
+        <Pagination className="mb-4 flex justify-center">
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious

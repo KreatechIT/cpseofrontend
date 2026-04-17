@@ -191,9 +191,9 @@ const ProjectFormPage = () => {
       }
       if (payload.clicks === "") {
         delete payload.clicks;
-      }
-      if (payload.website === "") {
-        delete payload.website;
+      }      
+      if (payload.due_date === "") {
+        delete payload.due_date;
       }
 
       if (isEditMode) {
@@ -269,11 +269,12 @@ const ProjectFormPage = () => {
 
               <div>
                 <Label className="text-base font-medium mb-2 block">
-                  Website
+                  Website <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   name="website"
                   type="url"
+                  required
                   value={formData.website}
                   onChange={handleChange}
                   placeholder="https://example.com"
@@ -310,7 +311,7 @@ const ProjectFormPage = () => {
                   name="sub_project_name"
                   value={formData.sub_project_name}
                   onChange={handleChange}
-                  placeholder="Sub Project"
+                  placeholder="Sub"
                 />
                 {/* <p className="text-xs text-muted-foreground mt-1">
                   Defaults to "1", or enter custom value (e.g., 2, 3, etc.)
