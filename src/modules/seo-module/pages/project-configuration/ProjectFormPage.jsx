@@ -15,6 +15,7 @@ import axiosInstance from "@/services/axiosInstance";
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 import { addProjectData, editProjectData } from "../../store/projectSlice";
+import DateField from "@/components/form-fields/DateField";
 
 const ProjectFormPage = () => {
   const navigate = useNavigate();
@@ -321,11 +322,18 @@ const ProjectFormPage = () => {
           </div>
 
           {/* ==================== SECTION 2: Dates ==================== */}
-          <div className="border border-gray-200 rounded-lg p-6">
+          <div className="border border-gray-200 rounded-lg p-6 dark:border-gray-800">
             <h3 className="text-lg font-semibold mb-4">Project Timeline</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div>
-                <Label className="mb-2 block">
+                <DateField
+                  fieldName="launched_date"
+                  label="Launched Date"
+                  required
+                  date={formData.launched_date}
+                  setDate={(date) => setFormData({ ...formData, launched_date: date })}
+                />
+                {/* <Label className="mb-2 block">
                   Launched Date <span className="text-red-500">*</span>
                 </Label>
                 <Input
@@ -335,48 +343,39 @@ const ProjectFormPage = () => {
                   value={formData.launched_date}
                   onChange={handleChange}
                   className="w-[100%] md:w-full"
-                />
+                /> */}
               </div>
               <div>
-                <Label className="mb-2 block">
-                  Domain Created <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  name="domain_created"
-                  type="date"
+                <DateField
+                  fieldName="domain_created"
+                  label="Domain Created"
                   required
-                  value={formData.domain_created}
-                  onChange={handleChange}
-                />
+                  date={formData.domain_created}
+                  setDate={(date) => setFormData({ ...formData, domain_created: date })}
+                />                
               </div>
               <div>
-                <Label className="mb-2 block">
-                  Domain Expires <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  name="domain_expires"
-                  type="date"
+                 <DateField
+                  fieldName="domain_expires"
+                  label="Domain Expires "
                   required
-                  value={formData.domain_expires}
-                  onChange={handleChange}
-                />
+                  date={formData.domain_expires}
+                  setDate={(date) => setFormData({ ...formData, domain_expires: date })}
+                />  
               </div>
               <div>
-                <Label className="mb-2 block">
-                  Due Date 
-                </Label>
-                <Input
-                  name="due_date"
-                  type="date"
-                  value={formData.due_date}
-                  onChange={handleChange}
-                />
+                <DateField
+                  fieldName="due_date"
+                  label="Due Date"
+                  date={formData.due_date}
+                  setDate={(date) => setFormData({ ...formData, due_date: date })}
+                />                 
               </div>
             </div>
           </div>
 
           {/* ==================== SECTION 3: Technical & Assignment ==================== */}
-          <div className="border border-gray-200 rounded-lg p-6">
+          <div className="border border-gray-200 rounded-lg p-6 dark:border-gray-800">
             <h3 className="text-lg font-semibold mb-4">
               Technical Details & Assignment
             </h3>
@@ -475,7 +474,7 @@ const ProjectFormPage = () => {
           </div>
 
           {/* ==================== SECTION 4: KPIs ==================== */}
-          <div className="border border-gray-200 rounded-lg p-6">
+          <div className="border border-gray-200 rounded-lg p-6 dark:border-gray-800">
             <h3 className="text-lg font-semibold mb-4">
               KPIs (Key Performance Indicators)
             </h3>
