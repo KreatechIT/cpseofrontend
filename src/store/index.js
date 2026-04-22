@@ -44,6 +44,7 @@ import issueOverviewImportReducer from "@/modules/seo-module/store/issueOverview
 import dailyRecordImportReducer from "@/modules/seo-module/store/dailyRecordImportSlice";
 import testScenarioReducer from "@/modules/seo-module/store/testScenarioSlice";
 import testScenarioImportReducer from '@/modules/seo-module/store/testScenarioImportSlice';
+import purchaseImportReducer from '@/modules/seo-module/store/purchaseImportSlice';
 // Redux Persist Configuration
 const persistConfig = {
   key: "root", // Key for localStorage
@@ -83,6 +84,7 @@ const combinedReducer = combineReducers({
   dailyRecordImport: dailyRecordImportReducer,
   testScenario: testScenarioReducer,
   testScenarioImport: testScenarioImportReducer,
+  purchaseImport: purchaseImportReducer,
   // Add other feature reducers here
 });
 

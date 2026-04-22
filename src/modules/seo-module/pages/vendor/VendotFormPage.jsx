@@ -237,7 +237,7 @@ const handleSubmit = async (e) => {
                 <Input name="vendor_name" required value={formData.vendor_name} onChange={handleChange} />
               </div>
               <div>
-                <Label className="mb-3">Website URL</Label>
+                <Label className="mb-3">Website URL *</Label>
                 <Input name="website_url" type="url" value={formData.website_url} onChange={handleChange} />
               </div>
               <div>

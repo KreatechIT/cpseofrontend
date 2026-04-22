@@ -31,6 +31,7 @@ import IssueOverviewImportPage from "@/modules/seo-module/pages/issue-overview-i
 import DailyRecordPage from "@/modules/seo-module/pages/daily-record-import/DailyRecordImportPage";
 import LinkSimilarityPage from "@/modules/seo-module/pages/link-similarity/LinkSimilarityPage";
 import TestScenarioPage from "@/modules/seo-module/pages/test-scenario/TestScenarioPage";
+import PurchaseImportPage from "@/modules/seo-module/pages/purchase-import/PurchaseImportPage";
 
 const seoRoutes = {
   path: "seo",
@@ -280,6 +281,14 @@ const seoRoutes = {
           element: (
             <PermissionRoute userType="member">
               <SeRankingImportPage />
+            </PermissionRoute>
+          ),
+        },
+        {
+          path: "purchase-import",
+          element: (
+            <PermissionRoute userType="member">
+              <PurchaseImportPage />
             </PermissionRoute>
           ),
         },

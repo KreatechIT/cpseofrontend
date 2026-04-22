@@ -154,6 +154,12 @@ const seoSidebarLinks = [
             hasPermission: () => true,
             children: null,
           },
+          {
+            title: "Purchase Import",
+            path: "/seo/import/purchase-import",
+            hasPermission: () => true,
+            children: null,
+          },
         ],
       },
       {
