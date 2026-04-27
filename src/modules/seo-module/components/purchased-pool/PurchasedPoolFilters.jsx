@@ -19,7 +19,7 @@ import { useMemo, useState } from "react";
 import PurchasedPoolTable from "./PurchasedPoolTable";
 import { Button } from "@/components/ui/button";
 
-const PurchasedPoolFilters = ({ purchased }) => {
+const PurchasedPoolFilters = ({ purchased, pagination, currentPage, onPageChange }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedVendor, setSelectedVendor] = useState(null);
   const [dateRange, setDateRange] = useState({ from: null, to: null });
@@ -29,7 +29,7 @@ const PurchasedPoolFilters = ({ purchased }) => {
     return [...new Set(purchased.map((p) => p.vendor).filter(Boolean))];
   }, [purchased]);
 
-  // Filtering
+  // Filtering (client-side filtering on current page data)
   const filteredPurchased = useMemo(() => {
     return purchased.filter((item) => {
       // Search
@@ -121,8 +121,13 @@ const PurchasedPoolFilters = ({ purchased }) => {
         </Popover>
       </div>
 
-      {/* Table */}
-      <PurchasedPoolTable purchased={filteredPurchased} />
+      {/* Table with Server-Side Pagination */}
+      <PurchasedPoolTable 
+        purchased={filteredPurchased} 
+        pagination={pagination}
+        currentPage={currentPage}
+        onPageChange={onPageChange}
+      />
     </div>
   );
 };

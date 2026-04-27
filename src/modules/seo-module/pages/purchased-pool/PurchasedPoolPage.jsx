@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllPurchased } from "../../services/purchasedPoolService";
 import { PageHeading } from "@/components/shared/PageHeading";
@@ -8,14 +8,19 @@ import PurchasedPoolFilters from "../../components/purchased-pool/PurchasedPoolF
 const PurchasedPoolPage = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  const { purchased } = useSelector((state) => state.purchasedPool);
-  const loading = !purchased;
+  const { purchased, pagination, loading } = useSelector((state) => state.purchasedPool);
+  const [currentPage, setCurrentPage] = useState(1);
 
+  // Fetch data when page changes
   useEffect(() => {
-    if (user?.organisation_id && !purchased) {
-      getAllPurchased(dispatch);
+    if (user?.organisation_id) {
+      getAllPurchased(dispatch, currentPage);
     }
-  }, [dispatch, user?.organisation_id, purchased]);
+  }, [dispatch, user?.organisation_id, currentPage]);
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
 
   return (
     <>
@@ -26,7 +31,12 @@ const PurchasedPoolPage = () => {
         {loading ? (
           <TableSkeleton />
         ) : (
-          <PurchasedPoolFilters purchased={purchased || []} />
+          <PurchasedPoolFilters 
+            purchased={purchased || []} 
+            pagination={pagination}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+          />
         )}
       </main>
     </>

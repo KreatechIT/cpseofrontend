@@ -11,7 +11,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { format } from "date-fns";
 import { formatDateShort } from "../../lib/dateUtils";
 
-// Central Pagination components (adjust path if needed)
+// Central Pagination components
 import {
   Pagination,
   PaginationContent,
@@ -22,16 +22,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-const ITEMS_PER_PAGE = 10;
-
-const PurchasedPoolTable = ({ purchased }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-
-  // Reset to page 1 when purchased data changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [purchased]);
-
+const PurchasedPoolTable = ({ purchased, pagination, currentPage, onPageChange }) => {
   if (!purchased || purchased.length === 0) {
     return (
       <p className="text-center py-8 text-muted-foreground">
@@ -40,13 +31,15 @@ const PurchasedPoolTable = ({ purchased }) => {
     );
   }
 
-  // Pagination logic
-  const totalPages = Math.ceil(purchased.length / ITEMS_PER_PAGE);
-  const start = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedData = purchased.slice(start, start + ITEMS_PER_PAGE);
+  // Calculate display range
+  const startItem = (pagination.page - 1) * pagination.pageSize + 1;
+  const endItem = Math.min(startItem + purchased.length - 1, pagination.total);
 
   return (
     <div className="space-y-4">
+      {/* Pagination Info */}
+
+
       <ScrollArea className="rounded-md border ">
         <Table>
           <TableHeader
@@ -86,10 +79,10 @@ const PurchasedPoolTable = ({ purchased }) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedData.map((item, index) => (
+            {purchased.map((item, index) => (
               <TableRow key={item.id}>
                 <TableCell className="font-medium">
-                  {start + index + 1}
+                  {startItem + index}
                 </TableCell>
                 <TableCell>{item.project_name || "-"}</TableCell>
                 <TableCell className="font-medium">
@@ -116,18 +109,6 @@ const PurchasedPoolTable = ({ purchased }) => {
                 </TableCell>
                 <TableCell>{item.unique_domain || "-"}</TableCell>
                 <TableCell className="max-w-[200px] truncate">
-                  {/* {item.live_link ? (
-                    <a
-                      href={item.live_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
-                    >
-                      View
-                    </a>
-                  ) : (
-                    "-"
-                  )} */}
                   <a
                     href={item.live_link}
                     target="_blank"
@@ -207,29 +188,31 @@ const PurchasedPoolTable = ({ purchased }) => {
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
+      {/* Server-Side Pagination */}
+      {pagination.totalPages > 1 && (
         <Pagination className="mt-4 flex justify-center">
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
-                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                onClick={() => onPageChange(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
+                className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
               />
             </PaginationItem>
 
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+            {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((page) => {
               // Show ellipsis for long lists
               if (
                 page === 1 ||
-                page === totalPages ||
+                page === pagination.totalPages ||
                 (page >= currentPage - 2 && page <= currentPage + 2)
               ) {
                 return (
                   <PaginationItem key={page}>
                     <PaginationLink
                       isActive={page === currentPage}
-                      onClick={() => setCurrentPage(page)}
+                      onClick={() => onPageChange(page)}
+                      className="cursor-pointer"
                     >
                       {page}
                     </PaginationLink>
@@ -244,15 +227,22 @@ const PurchasedPoolTable = ({ purchased }) => {
 
             <PaginationItem>
               <PaginationNext
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(totalPages, prev + 1))
-                }
-                disabled={currentPage === totalPages}
+                onClick={() => onPageChange(Math.min(pagination.totalPages, currentPage + 1))}
+                disabled={currentPage === pagination.totalPages}
+                className={currentPage === pagination.totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
               />
             </PaginationItem>
           </PaginationContent>
         </Pagination>
       )}
+      <div className="flex justify-between items-center text-sm text-muted-foreground">
+        <span>
+          Showing {startItem} - {endItem} of {pagination.total} entries
+        </span>
+        <span>
+          Page {pagination.page} of {pagination.totalPages}
+        </span>
+      </div>
     </div>
   );
 };
