@@ -16,8 +16,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
 import { format } from "date-fns";
+import { Progress } from "@/components/ui/progress";
 import ExcelUploadField from "@/components/form-fields/ExcelUploadField";
 import SeRankingImportTable from "./SeRankingImportTable";
 import { storeImportedData, setImportLoading, clearImportedData } from "../../store/seRankingImportSlice";
@@ -44,6 +45,7 @@ const SeRankingImportForm = () => {
   const [columns, setColumns] = useState([]);
   const [loading, setLoading] = useState(false);
   const [lastProcessedFile, setLastProcessedFile] = useState("");
+  const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
   const [importType, setImportType] = useState("se-ranking");
   const [vendors, setVendors] = useState([]);
     const [selectedVendor, setSelectedVendor] = useState("");
@@ -205,6 +207,7 @@ const SeRankingImportForm = () => {
     if (!selectedProject) return toast.error("Please select a Project");
 
     setLoading(true);
+    setUploadProgress({ current: 0, total: importedData.length });
     let successCount = 0;
     let errorCount = 0;
 
@@ -215,14 +218,15 @@ const SeRankingImportForm = () => {
       username,
     };
 
-    const importPromises = importedData.map(async (row) => {
+    // Process rows sequentially with progress tracking
+    for (let i = 0; i < importedData.length; i++) {
+      const row = importedData[i];
       try {
         let payload = { ...basePayload, project: selectedProject };
 
         if (importType === "se-ranking") {
           payload = {
             ...payload,
-            // Map to /seo/se-ranking/ - keyword ranking data
             keyword: getValue(row, "Keyword") || getValue(row, "keyword") || "",
             backlink: getValue(row, "Backlink") || "",
             status: getValue(row, "Status") || "Found",
@@ -249,7 +253,6 @@ const SeRankingImportForm = () => {
           };
           await importSeRankingData(payload);
         } else if (importType === "se-status") {
-          // Generate order_month from Date of publication or use current date
           const publicationDate = getValue(row, "Date of publication");
           const orderMonthDate = publicationDate ? new Date(formatDateForAPI(publicationDate)) : new Date();
           
@@ -280,7 +283,7 @@ const SeRankingImportForm = () => {
             remark: getValue(row, "Note") || "",
             backlinks_id: `SE-${Date.now()}`,
             project: selectedProject,
-            vendor: selectedVendor, // ← Now included
+            vendor: selectedVendor,
           };
           await importSeStatusData(payload);
         }
@@ -288,12 +291,15 @@ const SeRankingImportForm = () => {
         successCount++;
       } catch (error) {
         errorCount++;
+        console.error(`Row ${i + 1} import error:`, error);
       }
-    });
+      
+      // Update progress after each row
+      setUploadProgress({ current: i + 1, total: importedData.length });
+    }
 
     try {
-      await Promise.all(importPromises);
-      toast.success(`Import complete: ${successCount} successes, ${errorCount} errors`);
+      toast.success(`Import complete: ${successCount} successes${errorCount > 0 ? `, ${errorCount} errors` : ''}`);
       dispatch(clearImportedData());
       setFileName("");
       setFileTitle("");
@@ -301,6 +307,7 @@ const SeRankingImportForm = () => {
       toast.error("Import interrupted");
     } finally {
       setLoading(false);
+      setUploadProgress({ current: 0, total: 0 });
     }
   };
 
@@ -413,9 +420,38 @@ const SeRankingImportForm = () => {
                 (importType === "se-status" && !selectedVendor)
             }
             >
-            {loading ? "Uploading..." : "Upload"}
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Uploading...
+              </>
+            ) : (
+              "Upload"
+            )}
         </Button>
       </div>
+
+      {/* Progress Indicator */}
+      {loading && uploadProgress.total > 0 && (
+        <div className="border p-6 rounded-lg space-y-4 bg-blue-50 border-blue-200">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
+              <h3 className="text-lg font-semibold text-blue-900">Upload Progress</h3>
+            </div>
+            <span className="text-sm font-medium text-blue-700">
+              {uploadProgress.current} / {uploadProgress.total} rows
+            </span>
+          </div>
+          <Progress 
+            value={(uploadProgress.current / uploadProgress.total) * 100} 
+            className="h-3"
+          />
+          <p className="text-sm text-blue-700">
+            Processing row {uploadProgress.current} of {uploadProgress.total}... Please wait.
+          </p>
+        </div>
+      )}
 
       {/* Preview Section */}
       {importedData && (

@@ -16,8 +16,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon, Upload } from "lucide-react";
+import { CalendarIcon, Upload, Loader2 } from "lucide-react";
 import { format } from "date-fns";
+import { Progress } from "@/components/ui/progress";
 import ExcelUploadField from "@/components/form-fields/ExcelUploadField"; // ← Your reliable component
 import AhrefsImportTable from "./AhrefsImportTable";
 import {
@@ -56,6 +57,7 @@ const dispatch = useDispatch();
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [username, setUsername] = useState(""); // Now controlled by dropdown
+  const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
 
   const statusOptions = ["Active", "Inactive"];
   const setImportError = (error) => {
@@ -257,6 +259,7 @@ const handleImport = async () => {
       return toast.error("Project and Vendor are required");
     }
     setLoading(true);
+    setUploadProgress({ current: 0, total: importedData.length });
     let successCount = 0;
     let errorCount = 0;
 
@@ -278,7 +281,9 @@ const handleImport = async () => {
       return key ? row[key] || null : null;
     };
 
-    const importPromises = importedData.map(async (row) => {
+    // Sequential processing with progress tracking
+    for (let i = 0; i < importedData.length; i++) {
+      const row = importedData[i];
       try {
         let payload = { ...basePayload };
 
@@ -373,15 +378,14 @@ const handleImport = async () => {
         }
 
         successCount++;
+        setUploadProgress({ current: i + 1, total: importedData.length });
       } catch (error) {
         errorCount++;
-        console.error("Import failed for row:", row, error);
+        console.error(`Row ${i + 1} import error:`, error);
       }
-    });
+    }
 
     try {
-      await Promise.all(importPromises);
-
       toast.success(
         `Import complete! ${successCount} rows imported successfully.` +
         (errorCount > 0 ? ` ${errorCount} failed.` : "")
@@ -400,6 +404,7 @@ const handleImport = async () => {
       toast.error("Import failed. Check console for details.");
     } finally {
       setLoading(false);
+      setUploadProgress({ current: 0, total: 0 });
     }
   };
 
@@ -551,9 +556,36 @@ const handleImport = async () => {
       {/* Single Import Button */}
       <div className="flex flex-wrap gap-6 justify-end">
         <Button onClick={handleImport} disabled={loading || !importedData}>
+          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {loading ? "Uploading..." : "Upload"}
         </Button>
       </div>
+
+      {/* Progress Indicator */}
+      {loading && uploadProgress.total > 0 && (
+        <div className="border border-blue-200 bg-blue-50 rounded-lg p-4 space-y-3">
+          <div className="flex items-center gap-3">
+            <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
+            <div className="flex-1">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-medium text-blue-900">
+                  Uploading rows: {uploadProgress.current} / {uploadProgress.total}
+                </span>
+                <span className="text-sm text-blue-700">
+                  {Math.round((uploadProgress.current / uploadProgress.total) * 100)}%
+                </span>
+              </div>
+              <Progress 
+                value={(uploadProgress.current / uploadProgress.total) * 100} 
+                className="h-2"
+              />
+            </div>
+          </div>
+          <p className="text-sm text-blue-700">
+            Please wait while we process your data...
+          </p>
+        </div>
+      )}
       
       <div className="border p-4 space-y-6 border-gray-200 rounded-lg">
         {/* Right Side: PIC, File Name, Calendar Filter */}

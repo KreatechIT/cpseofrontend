@@ -16,8 +16,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
 import { format } from "date-fns";
+import { Progress } from "@/components/ui/progress";
 import ExcelUploadField from "@/components/form-fields/ExcelUploadField";
 import OrderImportTable from "./OrderImportTable";
 import ExportDataModal from "./ExportDataModal";
@@ -52,6 +53,7 @@ const OrderImportForm = () => {
   const [columns, setColumns] = useState([]);
   const [loading, setLoading] = useState(false);
   const [lastProcessedFile, setLastProcessedFile] = useState("");
+  const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
   
   // Publish date options
   const [publishDateMode, setPublishDateMode] = useState("auto"); // "auto" or "custom"
@@ -256,6 +258,7 @@ const OrderImportForm = () => {
     }
 
     setLoading(true);
+    setUploadProgress({ current: 0, total: importedData.length });
 
     try {
       // Prepare all orders for bulk import
@@ -289,6 +292,7 @@ const OrderImportForm = () => {
       if (!selectedProjectObj || !selectedProjectObj.project_name) {
         toast.error("Invalid project selected");
         setLoading(false);
+        setUploadProgress({ current: 0, total: 0 });
         return;
       }
 
@@ -305,6 +309,9 @@ const OrderImportForm = () => {
       }
 
       console.log("Sending payload:", payload);
+
+      // Simulate progress for bulk upload (since it's a single API call)
+      setUploadProgress({ current: importedData.length, total: importedData.length });
 
       // Call bulk import API
       const response = await importOrderData(payload);
@@ -359,6 +366,7 @@ const OrderImportForm = () => {
       }
     } finally {
       setLoading(false);
+      setUploadProgress({ current: 0, total: 0 });
     }
   };
 
@@ -505,9 +513,36 @@ const OrderImportForm = () => {
       {/* Upload Button */}
       <div className="flex justify-end">
         <Button onClick={handleImport} disabled={loading || !importedData || !selectedProject || !selectedVendor}>
+          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {loading ? "Uploading..." : "Upload Orders"}
         </Button>
       </div>
+
+      {/* Progress Indicator */}
+      {loading && uploadProgress.total > 0 && (
+        <div className="border border-blue-200 bg-blue-50 rounded-lg p-4 space-y-3">
+          <div className="flex items-center gap-3">
+            <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
+            <div className="flex-1">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-medium text-blue-900">
+                  Processing bulk upload: {uploadProgress.total} orders
+                </span>
+                <span className="text-sm text-blue-700">
+                  {uploadProgress.current === uploadProgress.total ? "100%" : "Processing..."}
+                </span>
+              </div>
+              <Progress 
+                value={(uploadProgress.current / uploadProgress.total) * 100} 
+                className="h-2"
+              />
+            </div>
+          </div>
+          <p className="text-sm text-blue-700">
+            Please wait while we process your bulk order import...
+          </p>
+        </div>
+      )}
 
       {/* Preview Section */}
       {importedData && (

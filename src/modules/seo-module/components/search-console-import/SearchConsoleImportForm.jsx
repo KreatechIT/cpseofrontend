@@ -16,8 +16,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
 import { format } from "date-fns";
+import { Progress } from "@/components/ui/progress";
 import ExcelUploadField from "@/components/form-fields/ExcelUploadField";
 import SearchConsoleImportTable from "./SearchConsoleImportTable";
 import { storeImportedData, setImportLoading, clearImportedData } from "../../store/searchConsoleImportSlice";
@@ -43,6 +44,7 @@ const SearchConsoleImportForm = () => {
   const [columns, setColumns] = useState([]);
   const [loading, setLoading] = useState(false);
   const [lastProcessedFile, setLastProcessedFile] = useState("");
+  const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
 const [dateFilter, setDateFilter] = useState({ from: null, to: null });
 const [totalUsersFilter, setTotalUsersFilter] = useState(null); // ← null, not ""
 const [importType, setImportType] = useState("performance"); // default
@@ -221,6 +223,7 @@ const [importType, setImportType] = useState("performance"); // default
     if (!selectedProject) return toast.error("Please select a Project");
 
     setLoading(true);
+    setUploadProgress({ current: 0, total: importedData.length });
     let successCount = 0;
     let errorCount = 0;
 
@@ -231,8 +234,9 @@ const [importType, setImportType] = useState("performance"); // default
       username,
     };
 
-    const importPromises = importedData.map(async (row) => {
-        const ctr = getValue(row, "CTR");
+    // Process rows sequentially with progress tracking
+    for (let i = 0; i < importedData.length; i++) {
+      const row = importedData[i];
       try {
         const payload = {
           ...basePayload,
@@ -242,7 +246,7 @@ const [importType, setImportType] = useState("performance"); // default
           ctr: (getValue(row, 'CTR') || "").replace(/%$/i, "") || "0",
           position: getValue(row, "Position") || "0",
           total_user: parseInt(getValue(row, "totalUsers") || 0),
-          organic_search: 0, // Map if available in other sheets
+          organic_search: 0,
           direct: 0,
           referral: 0,
           organic_social: 0,
@@ -260,12 +264,15 @@ const [importType, setImportType] = useState("performance"); // default
         successCount++;
       } catch (error) {
         errorCount++;
+        console.error(`Row ${i + 1} import error:`, error);
       }
-    });
+      
+      // Update progress after each row
+      setUploadProgress({ current: i + 1, total: importedData.length });
+    }
 
     try {
-      await Promise.all(importPromises);
-      toast.success(`Import complete: ${successCount} successes, ${errorCount} errors`);
+      toast.success(`Import complete: ${successCount} successes${errorCount > 0 ? `, ${errorCount} errors` : ''}`);
       dispatch(clearImportedData());
       setFileName("");
       setFileTitle("");
@@ -273,6 +280,7 @@ const [importType, setImportType] = useState("performance"); // default
       toast.error("Import interrupted");
     } finally {
       setLoading(false);
+      setUploadProgress({ current: 0, total: 0 });
     }
   };
     // Filter data
@@ -384,10 +392,39 @@ if (totalUsersFilter !== null && getValue(row, "totalUsers") !== totalUsersFilte
         {/* Upload button - only show in Performance mode */}
         {importType === "performance" && (
           <Button onClick={handleImport} disabled={loading || !importedData || !selectedProject}>
-            {loading ? "Uploading..." : "Upload Search Console"}
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Uploading...
+              </>
+            ) : (
+              "Upload Search Console"
+            )}
           </Button>
         )}
       </div>
+
+      {/* Progress Indicator */}
+      {loading && uploadProgress.total > 0 && (
+        <div className="border p-6 rounded-lg space-y-4 bg-blue-50 border-blue-200">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
+              <h3 className="text-lg font-semibold text-blue-900">Upload Progress</h3>
+            </div>
+            <span className="text-sm font-medium text-blue-700">
+              {uploadProgress.current} / {uploadProgress.total} rows
+            </span>
+          </div>
+          <Progress 
+            value={(uploadProgress.current / uploadProgress.total) * 100} 
+            className="h-3"
+          />
+          <p className="text-sm text-blue-700">
+            Processing row {uploadProgress.current} of {uploadProgress.total}... Please wait.
+          </p>
+        </div>
+      )}
 
 {/* Import Type Buttons - Same as Ahrefs Import */}
       {importedData && (

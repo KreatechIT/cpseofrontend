@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
 import { format } from "date-fns";
+import { Progress } from "@/components/ui/progress";
 import ExcelUploadField from "@/components/form-fields/ExcelUploadField";
 import AnalyticsImportTable from "./AnalyticsImportTable";
 import { storeImportedData, setImportLoading, clearImportedData } from "../../store/analyticsImportSlice";
@@ -35,6 +36,7 @@ const [totalUsersFilter, setTotalUsersFilter] = useState(null); // ← null, not
   const [columns, setColumns] = useState([]);
   const [loading, setLoading] = useState(false);
   const [lastProcessedFile, setLastProcessedFile] = useState("");
+  const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
 
   // Fetch users and projects
   useEffect(() => {
@@ -194,6 +196,7 @@ const [totalUsersFilter, setTotalUsersFilter] = useState(null); // ← null, not
     if (!selectedProject) return toast.error("Please select a Project");
 
     setLoading(true);
+    setUploadProgress({ current: 0, total: importedData.length });
     let successCount = 0;
     let errorCount = 0;
 
@@ -204,28 +207,30 @@ const [totalUsersFilter, setTotalUsersFilter] = useState(null); // ← null, not
       username,
     };
 
-    const importPromises = importedData.map(async (row) => {
+    // Process rows sequentially with progress tracking
+    for (let i = 0; i < importedData.length; i++) {
+      const row = importedData[i];
       try {
         const channel = getValue(row, "firstUserPrimaryChannelGroup").toLowerCase();
         const payload = {
           ...basePayload,
           date: formatDateForAPI(getValue(row, "date")) || format(new Date(), "yyyy-MM-dd"),
-          impressions: 0, // Not in Excel, default
-          clicks: 0, // Not in Excel
-          ctr: 0, // Not in Excel
-          position: 0, // Not in Excel
+          impressions: 0,
+          clicks: 0,
+          ctr: 0,
+          position: 0,
           total_user: parseInt(getValue(row, "totalUsers") || 0),
           organic_search: channel.includes("organic search") ? parseInt(getValue(row, "totalUsers") || 0) : 0,
           direct: channel.includes("direct") ? parseInt(getValue(row, "totalUsers") || 0) : 0,
           referral: channel.includes("referral") ? parseInt(getValue(row, "totalUsers") || 0) : 0,
           organic_social: channel.includes("organic social") ? parseInt(getValue(row, "totalUsers") || 0) : 0,
           unassigned: channel.includes("unassigned") ? parseInt(getValue(row, "totalUsers") || 0) : 0,
-          inquiry_download: 0, // Not in Excel
-          inquiry_whatsapp: 0, // Not in Excel
-          register: 0, // Not in Excel
-          join: 0, // Not in Excel
-          first_deposit: "0", // Not in Excel
-          total_deposit: "0", // Not in Excel
+          inquiry_download: 0,
+          inquiry_whatsapp: 0,
+          register: 0,
+          join: 0,
+          first_deposit: "0",
+          total_deposit: "0",
           project: selectedProject,
         };
 
@@ -233,12 +238,15 @@ const [totalUsersFilter, setTotalUsersFilter] = useState(null); // ← null, not
         successCount++;
       } catch (error) {
         errorCount++;
+        console.error(`Row ${i + 1} import error:`, error);
       }
-    });
+      
+      // Update progress after each row
+      setUploadProgress({ current: i + 1, total: importedData.length });
+    }
 
     try {
-      await Promise.all(importPromises);
-      toast.success(`Import complete: ${successCount} successes, ${errorCount} errors`);
+      toast.success(`Import complete: ${successCount} successes${errorCount > 0 ? `, ${errorCount} errors` : ''}`);
       dispatch(clearImportedData());
       setFileName("");
       setFileTitle("");
@@ -246,6 +254,7 @@ const [totalUsersFilter, setTotalUsersFilter] = useState(null); // ← null, not
       toast.error("Import interrupted");
     } finally {
       setLoading(false);
+      setUploadProgress({ current: 0, total: 0 });
     }
   };
 
@@ -346,9 +355,38 @@ if (totalUsersFilter !== null && getValue(row, "totalUsers") !== totalUsersFilte
       {/* Upload Button */}
       <div className="flex justify-end">
         <Button onClick={handleImport} disabled={loading || !importedData || !selectedProject}>
-          {loading ? "Uploading..." : "Upload Analytics"}
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Uploading...
+            </>
+          ) : (
+            "Upload Analytics"
+          )}
         </Button>
       </div>
+
+      {/* Progress Indicator */}
+      {loading && uploadProgress.total > 0 && (
+        <div className="border p-6 rounded-lg space-y-4 bg-blue-50 border-blue-200">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
+              <h3 className="text-lg font-semibold text-blue-900">Upload Progress</h3>
+            </div>
+            <span className="text-sm font-medium text-blue-700">
+              {uploadProgress.current} / {uploadProgress.total} rows
+            </span>
+          </div>
+          <Progress 
+            value={(uploadProgress.current / uploadProgress.total) * 100} 
+            className="h-3"
+          />
+          <p className="text-sm text-blue-700">
+            Processing row {uploadProgress.current} of {uploadProgress.total}... Please wait.
+          </p>
+        </div>
+      )}
 
       {/* Preview Section */}
       {importedData && (

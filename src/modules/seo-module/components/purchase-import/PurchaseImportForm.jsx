@@ -16,8 +16,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
 import { format } from "date-fns";
+import { Progress } from "@/components/ui/progress";
 import ExcelUploadField from "@/components/form-fields/ExcelUploadField";
 import PurchaseImportTable from "./PurchaseImportTable";
 import {
@@ -51,6 +52,7 @@ const PurchaseImportForm = () => {
   const [columns, setColumns] = useState([]);
   const [loading, setLoading] = useState(false);
   const [lastProcessedFile, setLastProcessedFile] = useState("");
+  const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
 
   // Fetch users, projects, vendors
   useEffect(() => {
@@ -241,11 +243,12 @@ const PurchaseImportForm = () => {
     }
 
     setLoading(true);
+    setUploadProgress({ current: 0, total: importedData.length });
     let successCount = 0;
     let errorCount = 0;
     const errors = [];
 
-    // Process rows sequentially with delay to prevent overwhelming the server
+    // Process rows sequentially with progress tracking
     for (let i = 0; i < importedData.length; i++) {
       const row = importedData[i];
       
@@ -287,6 +290,9 @@ const PurchaseImportForm = () => {
         await importPurchaseData(payload);
         successCount++;
         
+        // Update progress after each row
+        setUploadProgress({ current: i + 1, total: importedData.length });
+        
         // Add small delay between requests to prevent rate limiting
         if (i < importedData.length - 1) {
           await new Promise(resolve => setTimeout(resolve, 200));
@@ -298,6 +304,9 @@ const PurchaseImportForm = () => {
           : error.message || "Unknown error";
         errors.push(`Row ${i + 1}: ${errorMsg}`);
         console.error(`Row ${i + 1} import error:`, error);
+        
+        // Update progress even on error
+        setUploadProgress({ current: i + 1, total: importedData.length });
       }
     }
 
@@ -316,6 +325,7 @@ const PurchaseImportForm = () => {
     }
 
     setLoading(false);
+    setUploadProgress({ current: 0, total: 0 });
   };
 
   return (
@@ -347,7 +357,7 @@ const PurchaseImportForm = () => {
           <Input type="time" value={time} onChange={(e) => setTime(e.target.value)} />
         </div>
 
-        <div>
+        {/* <div>
           <Label className="mb-3">Username</Label>
           <Select value={username} onValueChange={setUsername}>
             <SelectTrigger className="w-full">
@@ -367,7 +377,7 @@ const PurchaseImportForm = () => {
           </Select>
         </div>
 
-        {/* <div>
+        <div>
           <Label className="mb-3">Project *</Label>
           <Select value={selectedProject} onValueChange={setSelectedProject}>
             <SelectTrigger className="w-full">
@@ -410,9 +420,38 @@ const PurchaseImportForm = () => {
       {/* Upload Button */}
       <div className="flex justify-end">
         <Button onClick={handleImport} disabled={loading || !importedData }>
-          {loading ? "Uploading..." : "Upload Purchases"}
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Uploading...
+            </>
+          ) : (
+            "Upload Purchases"
+          )}
         </Button>
       </div>
+
+      {/* Progress Indicator */}
+      {loading && uploadProgress.total > 0 && (
+        <div className="border p-6 rounded-lg space-y-4 bg-blue-50 border-blue-200">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
+              <h3 className="text-lg font-semibold text-blue-900">Upload Progress</h3>
+            </div>
+            <span className="text-sm font-medium text-blue-700">
+              {uploadProgress.current} / {uploadProgress.total} rows
+            </span>
+          </div>
+          <Progress 
+            value={(uploadProgress.current / uploadProgress.total) * 100} 
+            className="h-3"
+          />
+          <p className="text-sm text-blue-700">
+            Processing row {uploadProgress.current} of {uploadProgress.total}... Please wait.
+          </p>
+        </div>
+      )}
 
       {/* Preview Section */}
       {importedData && (
