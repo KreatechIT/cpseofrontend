@@ -239,28 +239,27 @@ const PurchaseImportForm = () => {
     if (!importedData || importedData.length === 0) {
       return toast.error("No data to import");
     }
-    // if (!selectedProject || !selectedVendor) {
-    //   return toast.error("Please select Project and Vendor");
-    // }
 
     setLoading(true);
     let successCount = 0;
     let errorCount = 0;
+    const errors = [];
 
-    // Import each row individually
-    const importPromises = importedData.map(async (row) => {
+    // Process rows sequentially with delay to prevent overwhelming the server
+    for (let i = 0; i < importedData.length; i++) {
+      const row = importedData[i];
+      
       try {
         const payload = {
           project: selectedProject, // UUID
-          // vendor: selectedVendor, // UUID
-          vendor: getValue(row, "Vendor") || "", // UUID
+          vendor: getValue(row, "Vendor") || "",
           created_date: formatDateForAPI(getValue(row, "Created Date")) || format(new Date(), "yyyy-MM-dd"),
           domain_created_date: formatDateForAPI(getValue(row, "Domain Created Date")),
           domain_expiration_date: formatDateForAPI(getValue(row, "Domain Expiration Date")),
           link_type: getValue(row, "Link Type") || "",
           price_usd: getValue(row, "Price Per Link (USD)") || "0",
           price_myr: getValue(row, "Price Per Link (MYR)") || "0",
-          domain: getValue(row, "Unique Domain") || "",
+          domain: getValue(row, "Domain") || "", // Fixed: Use "Domain" column, not "Unique Domain"
           unique_domain: getValue(row, "Unique Domain") || "",
           live_link: getValue(row, "Live Link") || "",
           keyword_1: getValue(row, "Keyword (1)") || "",
@@ -271,9 +270,9 @@ const PurchaseImportForm = () => {
           link_status: getValue(row, "Link Status") || "",
           follow: getValue(row, "Follow") || "",
           domain_rating: getValue(row, "Domain Rating") || "0",
-          domain_authority: parseInt(getValue(row, "Domain Authority") || 0),
-          page_authority: parseInt(getValue(row, "Page Authority") || 0),
-          spam_score: parseInt(getValue(row, "Spam Score") || 0),
+          domain_authority: parseInt(getValue(row, "Domain Authority") || 0) || 0,
+          page_authority: parseInt(getValue(row, "Page Authority") || 0) || 0,
+          spam_score: parseInt(getValue(row, "Spam Score") || 0) || 0,
           remark: getValue(row, "Remark") || "",
           created_by: user.id,
         };
@@ -287,32 +286,36 @@ const PurchaseImportForm = () => {
 
         await importPurchaseData(payload);
         successCount++;
+        
+        // Add small delay between requests to prevent rate limiting
+        if (i < importedData.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 200));
+        }
       } catch (error) {
         errorCount++;
-        console.error("Row import error:", error);
+        const errorMsg = error.response?.data 
+          ? Object.values(error.response.data).flat().join("; ")
+          : error.message || "Unknown error";
+        errors.push(`Row ${i + 1}: ${errorMsg}`);
+        console.error(`Row ${i + 1} import error:`, error);
       }
-    });
-
-    try {
-      await Promise.all(importPromises);
-      
-      if (successCount > 0) {
-        toast.success(`Import complete: ${successCount} successes${errorCount > 0 ? `, ${errorCount} errors` : ''}`);
-      } else {
-        toast.error(`Import failed: ${errorCount} errors`);
-      }
-
-      // Clear form on success
-      if (successCount > 0) {
-        dispatch(clearImportedData());
-        setFileName("");
-        setFileTitle("");
-      }
-    } catch (err) {
-      toast.error("Import interrupted");
-    } finally {
-      setLoading(false);
     }
+
+    // Show results
+    if (successCount > 0 && errorCount === 0) {
+      toast.success(`Import complete: ${successCount} rows imported successfully`);
+      dispatch(clearImportedData());
+      setFileName("");
+      setFileTitle("");
+    } else if (successCount > 0 && errorCount > 0) {
+      toast.warning(`Partial import: ${successCount} succeeded, ${errorCount} failed`);
+      console.error("Import errors:", errors);
+    } else {
+      toast.error(`Import failed: ${errorCount} errors. Check console for details.`);
+      console.error("Import errors:", errors);
+    }
+
+    setLoading(false);
   };
 
   return (

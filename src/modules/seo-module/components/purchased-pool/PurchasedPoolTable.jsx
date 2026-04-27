@@ -178,9 +178,9 @@ const PurchasedPoolTable = ({ purchased }) => {
                 <TableCell>{item.follow || "-"}</TableCell>
                 <TableCell>
                   {item.domain_rating
-                    ? item.domain_rating < 1
-                      ? item.domain_rating.toFixed(1)
-                      : Math.round(item.domain_rating)
+                    ? parseFloat(item.domain_rating) < 1
+                      ? parseFloat(item.domain_rating).toFixed(1)
+                      : Math.round(parseFloat(item.domain_rating))
                     : "-"}
                 </TableCell>
                 <TableCell>{item.domain_authority || "-"}</TableCell>
